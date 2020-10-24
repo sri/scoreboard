@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Scoreboard</title>
+<style type="text/css">
+body {
+  background: black;
+  color: #fff;
+}
+.container {
+  display: flex;
+}
+.team {
+  flex: 1;
+  text-align:center;
+}
+.team:first-child {
+  margin-right: 20px;
+}
+.boxscore {
+  border: 1px solid #fff;
+  width: 400px;
+}
+.teamname {
+  font-size: 40pt;
+}
+.score {
+  font-size: 122pt;
+}
+.clock {
+  flex: 1;
+  color: red;
+  font-weight: bold;
+  text-align: center;
+}
+.gameclock {
+  font-size: 54pt;
+}
+.shotclock {
+  font-size: 44pt;
+}
+.fouls {
+  font-size: 30pt;
+}
+.timeouts {
+  font-size: 30pt;
+}
+</style>
+<script type="text/javascript">
+class Team {
+  constructor(elt) {
+    this.elt = elt;
+    this.scoreElt = elt.querySelector(".score")
+  }
+}
+
+
+class Clock {
+  constructor(eltName) {
+    this.elt = document.querySelector(eltName);
+    this.shotclockElt = this.elt.querySelector(".shotclock");
+    this.gameclockElt = this.elt.querySelector(".gameclock");
+  }
+
+  updateShotClock() {
+    let value = parseInt(this.shotclockElt.innerHTML, 10);
+    if (isNaN(value) || value <= 0) {
+      value = 24;
+    } else {
+      value -= 1;
+    }
+    this.shotclockElt.innerHTML = value + "";
+  }
+
+  start() {
+    setInterval(() => this.updateShotClock(), 1000);
+  }
+}
+
+function Start() {
+  (new Clock(".clock")).start();
+}
+
+</script>
+</head>
+<body onload="Start()">
+  <div class="container">
+    <div class="team">
+      <div class="boxscore">
+        <div class="teamname">Houston Rockets</div>
+        <div class="score">0</div>
+        <div class="fouls">Fouls:</div>
+        <div class="timeouts">Timeouts:</div>
+      </div>
+    </div>
+
+    <div class="clock">
+      <div class="gameclock">12:00</div>
+      <div class="shotclock">19</div>
+    </div>
+
+
+    <div class="team">
+      <div class="boxscore">
+        <div class="teamname">Sacremento Kings</div>
+        <div class="score">0</div>
+        <div class="fouls">Fouls:</div>
+        <div class="timeouts">Timeouts:</div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
