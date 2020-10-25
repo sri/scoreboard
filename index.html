@@ -80,7 +80,9 @@ class Team {
     return asInt(this.scoreElt);
   }
 
-  incrementScore() {
+  incrementScore(event) {
+    if (event) event.preventDefault();
+
     let currentScore = asInt(this.scoreElt);
     currentScore += 1;
     CLOCK.scoreUpdatedCallback();
@@ -107,7 +109,9 @@ class Clock {
     this.scoreUpdated = false;
   }
 
-  togglePause() {
+  togglePause(event) {
+    if (event) event.preventDefault();
+
     this.paused = !this.paused;
     if (this.paused) {
       this.elt.classList.add("paused")
@@ -206,14 +210,14 @@ function Init() {
 </head>
 <body onload="Init()">
   <div class="container">
-    <div class="team hometeam" onTouchStart="HOME.incrementScore()">
+    <div class="team hometeam" onTouchStart="HOME.incrementScore(event)" onClick="HOME.incrementScore()">
       <div class="boxscore">
         <div class="teamname">Houston Rockets</div>
         <div class="score">0</div>
       </div>
     </div>
 
-    <div class="clock paused" onTouchStart="CLOCK.togglePause()">
+    <div class="clock paused" onTouchStart="CLOCK.togglePause(event)" onclick="CLOCK.togglePause()">
       <div class="gameclock">
         <span class="mins">12</span>:<span class="secs">00</span>
       </div>
@@ -223,7 +227,7 @@ function Init() {
     </div>
 
 
-    <div class="team awayteam" onTouchStart="AWAY.incrementScore()">
+    <div class="team awayteam" onTouchStart="AWAY.incrementScore(event)" onclick="AWAY.incrementScore()">
       <div class="boxscore">
         <div class="teamname">Sacremento Kings</div>
         <div class="score">0</div>
