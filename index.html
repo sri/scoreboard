@@ -6,7 +6,7 @@
 <style type="text/css">
 body {
   background: black;
-  color: #fff;
+  color: #aaa;
 }
 .container {
   display: flex;
@@ -19,7 +19,7 @@ body {
   margin-right: 20px;
 }
 .boxscore {
-  border: 1px solid #fff;
+  border: 1px solid #aaa;
   width: 400px;
 }
 .teamname {
@@ -30,7 +30,7 @@ body {
 }
 .clock {
   flex: 1;
-  color: red;
+  color: #E1341E;
   font-weight: bold;
   text-align: center;
 }
@@ -47,7 +47,7 @@ body {
   font-size: 30pt;
 }
 .paused {
-  border: 1px solid red;
+  border: 1px solid #E1341E;
 }
 .quarter, .overtime {
   font-size: 30pt;
@@ -226,7 +226,6 @@ function Init() {
       <div class="overtime hidden">Overtime <span class="current">0</span></div>
     </div>
 
-
     <div class="team awayteam" onTouchStart="AWAY.incrementScore(event)" onclick="AWAY.incrementScore()">
       <div class="boxscore">
         <div class="teamname">Sacremento Kings</div>
@@ -234,6 +233,5 @@ function Init() {
       </div>
     </div>
   </div>
-
 </body>
 </html>
