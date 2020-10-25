@@ -72,7 +72,7 @@ class Team {
     this.elt = document.querySelector(eltName);
     this.scoreElt = this.elt.querySelector(".score");
 
-    this.elt.onclick = () => this.incrementScore();
+    // this.elt.ontouchstart = () => this.incrementScore();
   }
 
   getCurrentScore() {
@@ -168,6 +168,7 @@ class Clock {
         return;
       }
     }
+
     this.gameClockMinsElt.innerHTML = this.format2digit(mins);
     this.gameClockSecsElt.innerHTML = this.format2digit(secs);
   }
@@ -211,7 +212,7 @@ function Score() {
 </head>
 <body onload="Start()">
   <div class="container">
-    <div class="team hometeam">
+    <div class="team hometeam" onTouchStart="HOME.incrementScore()">
       <div class="boxscore">
         <div class="teamname">Houston Rockets</div>
         <div class="score">0</div>
@@ -220,7 +221,7 @@ function Score() {
       </div>
     </div>
 
-    <div class="clock paused" onClick="Pause()">
+    <div class="clock paused" onTouchStart="Pause()">
       <div class="gameclock">
         <span class="mins">12</span>:<span class="secs">00</span>
       </div>
@@ -230,7 +231,7 @@ function Score() {
     </div>
 
 
-    <div class="team awayteam">
+    <div class="team awayteam" onTouchStart="AWAY.incrementScore()">
       <div class="boxscore">
         <div class="teamname">Sacremento Kings</div>
         <div class="score">0</div>
