@@ -257,7 +257,10 @@ class Clock {
       this.updateClock();
     }
   }
+}
 
+function IsDev() {
+  return window.location.protocol === "file:";
 }
 
 let CLOCK,
@@ -277,6 +280,7 @@ function Init() {
   TEAM_SELECTOR = new TeamSelector();
 
   window.addEventListener("beforeunload", function (e) {
+    if (IsDev()) return null;
     var confirmationMessage = 'If you leave, your game will be lost.';
     (e || window.event).returnValue = confirmationMessage; //Gecko + IE
     return confirmationMessage; //Gecko + Webkit, Safari, Chrome etc.
