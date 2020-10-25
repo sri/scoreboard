@@ -82,6 +82,7 @@ class Team {
   incrementScore() {
     let currentScore = asInt(this.scoreElt);
     currentScore += 1;
+    CLOCK.scoreUpdatedCallback();
     this.scoreElt.innerHTML = currentScore + "";
   }
 }
@@ -101,6 +102,8 @@ class Clock {
     this.overtimeCurrentElt = this.overtimeElt.querySelector(".current");
 
     this.paused = true;
+
+    this.scoreUpdated = false;
   }
 
   togglePause() {
@@ -110,6 +113,10 @@ class Clock {
     } else {
       this.elt.classList.remove("paused")
     }
+  }
+
+  scoreUpdatedCallback() {
+    this.scoreUpdated = true;
   }
 
   updateClock() {
@@ -122,6 +129,9 @@ class Clock {
     if (mins === 0 && secs <= 24) {
       // If game clock < 24, don't show shot clock.
       shotclock = "-";
+    } else if (this.scoreUpdated) {
+      shotclock = 24;
+      this.scoreUpdated = false;
     } else {
       shotclock -= 1;
     }
