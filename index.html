@@ -7,9 +7,15 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
 <title>Scoreboard</title>
 <style type="text/css">
-html, body, .box, .button {
+html, body, .box {
   font-family: 'Roboto Mono', serif;
   background: #100e17;
+}
+s.modal .teams button {
+  background: #eee;
+}
+.selected, .selected:active {
+  color: green;
 }
 .score {
   font-size: 180pt;
@@ -41,14 +47,49 @@ html, body, .box, .button {
   border: 0;
   border-radius: 0;
   border: 1px solid #4a4a4a;
+  height: 125px;
+  background: #100e17;
 }
 .paused {
   border: 1px solid #b42a18;
 }
 </style>
 <script type="text/javascript">
-var MINS_PER_QUARTER = 4;
-var MINS_PER_OVERTIME = 2;
+const MINS_PER_QUARTER = 12;
+const MINS_PER_OVERTIME = 5;
+
+const TEAMS = [
+  'Atlanta Hawks',
+  'Boston Celtics',
+  'Brooklyn Nets',
+  'Charlotte Hornets',
+  'Chicago Bulls',
+  'Cleveland Cavaliers',
+  'Dallas Mavericks',
+  'Denver Nuggets',
+  'Detroit Pistons',
+  'Golden State Warriors',
+  'Houston Rockets',
+  'Indiana Pacers',
+  'Los Angeles Clippers',
+  'Los Angeles Lakers',
+  'Memphis Grizzlies',
+  'Miami Heat',
+  'Milwaukee Bucks',
+  'Minnesota Timberwolves',
+  'New Orleans Pelicans',
+  'New York Knicks',
+  'Oklahoma City Thunder',
+  'Orlando Magic',
+  'Philadelphia 76ers',
+  'Phoenix Suns',
+  'Portland Trail Blazers',
+  'Sacramento Kings',
+  'San Antonio Spurs',
+  'Toronto Raptors',
+  'Utah Jazz',
+  'Washington Wizards',
+];
 
 function asInt(elt) {
   const value = parseInt(elt.innerHTML, 10);
@@ -62,6 +103,10 @@ class Team {
   constructor(eltName) {
     this.elt = document.querySelector(eltName);
     this.scoreElt = this.elt.querySelector(".score");
+  }
+
+  reset() {
+    this.scoreElt.innerHTML = "0";
   }
 
   getCurrentScore() {
@@ -111,6 +156,17 @@ class Clock {
     this.scoreUpdated = false;
   }
 
+  reset() {
+    if (!this.paused) this.togglePause();
+    this.shotclockElt.innerHTML = "24";
+    this.gameClockMinsElt.innerHTML = MINS_PER_QUARTER
+    this.gameClockSecsElt.innerHTML = "00";
+    this.quarterCurrentElt.innerHTML = "1";
+    this.quarterElt.classList.remove("is-hidden");
+    this.overtimeElt.classList.add("is-hidden");
+    this.overtimeCurrentElt.innerHTML = "0";
+  }
+
   togglePause(event) {
     if (event) event.preventDefault();
 
@@ -123,6 +179,8 @@ class Clock {
   }
 
   scoreUpdatedCallback() {
+    if (this.paused) return;
+    // This will reset the shotclock.
     this.scoreUpdated = true;
   }
 
@@ -160,8 +218,8 @@ class Clock {
         this.quarterCurrentElt.innerHTML = quarter;
       } else if (HOME.getCurrentScore() === AWAY.getCurrentScore()) {
         // Overtime
-        this.quarterElt.classList.add("hidden");
-        this.overtimeElt.classList.remove("hidden");
+        this.quarterElt.classList.add("is-hidden");
+        this.overtimeElt.classList.remove("is-hidden");
 
         let overtime = asInt(this.overtimeCurrentElt) + 1;
         mins = MINS_PER_OVERTIME;
@@ -198,14 +256,20 @@ class Clock {
 
 let CLOCK,
     HOME,
-    AWAY;
+    AWAY,
+    TEAM_SELECTOR;
 
 function Init() {
   HOME = new Team(".hometeam");
   AWAY = new Team(".awayteam");
+  HOME.reset();
+  AWAY.reset();
 
   CLOCK = new Clock(".clock");
   CLOCK.init();
+  CLOCK.reset()
+
+  TEAM_SELECTOR = new TeamSelector();
 
   window.addEventListener("beforeunload", function (e) {
     var confirmationMessage = 'If you leave, your game will be lost.';
@@ -214,6 +278,59 @@ function Init() {
   });
 }
 
+class TeamSelector {
+  constructor() {
+    this.modal = document.querySelector(".modal");
+    this.allTeams = document.querySelectorAll(".modal .teams button");
+  }
+
+  deselectAll() {
+    for (let i = 0; i < this.allTeams.length; i += 1) {
+      this.allTeams[i].classList.remove("is-primary");
+    }
+  }
+
+  getAllSelected() {
+    const result = [];
+    for (let i = 0; i < this.allTeams.length; i += 1) {
+      if (this.allTeams[i].classList.contains("is-primary")) {
+        result.push(this.allTeams[i].innerHTML);
+      }
+    }
+    return result;
+  }
+
+  changeTeams() {
+    if (!this.modal.classList.contains("is-active")) {
+      if (!CLOCK.paused) CLOCK.togglePause();
+      this.modal.classList.add("is-active");
+      return;
+    }
+
+    const selected = this.getAllSelected();
+    this.modal.classList.remove("is-active");
+    this.deselectAll();
+
+    if (selected.length === 2) {
+      var home = selected[0];
+      var away = selected[1];
+      document.querySelector(".hometeamname").innerHTML = home;
+      document.querySelector(".awayteamname").innerHTML = away;
+      HOME.reset();
+      AWAY.reset();
+      CLOCK.reset();
+    }
+  }
+
+  selectTeam(elt) {
+    if (elt.classList.contains("is-primary")) {
+      elt.classList.remove("is-primary");
+    } else {
+      if (this.getAllSelected().length === 2) this.deselectAll();
+      elt.classList.add("is-primary");
+    }
+  }
+}
 </script>
 </head>
 <body onload="Init()">
@@ -222,7 +339,7 @@ function Init() {
       <div class="tile is-ancestor">
         <div class="tile is-vertical is-parent">
           <div class="tile is-child">
-            <div class="teamname">Portland Trail Blazers</div>
+            <div class="teamname hometeamname" onClick="TEAM_SELECTOR.changeTeams()">Portland Trail Blazers</div>
           </div>
           <div class="tile is-child">
             <div class="score" onTouchStart="HOME.onePointer(event)" onClick="HOME.onePointer()">0</div>
@@ -268,7 +385,7 @@ function Init() {
       <div class="tile is-ancestor">
         <div class="tile is-vertical is-parent">
           <div class="tile is-child">
-            <div class="teamname">Los Angeles Lakers</div>
+            <div class="teamname awayteamname" onClick="TEAM_SELECTOR.changeTeams()">Los Angeles Lakers</div>
           </div>
           <div class="tile is-child">
             <div class="score" onTouchStart="AWAY.onePointer(event)" onClick="AWAY.onePointer()">0</div>
@@ -289,5 +406,53 @@ function Init() {
       </div>
     </div>
   </div>
+
+  <div class="modal">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+      <header class="modal-card-head">
+        <p class="modal-card-title">Select Teams</p>
+        <button class="delete" aria-label="close"></button>
+      </header>
+      <section class="modal-card-body teams">
+        <div class="field is-grouped is-grouped-multiline">
+          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Atlanta Hawks</button>
+          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Boston Celtics</button>
+          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Brooklyn Nets</button>
+          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Charlotte Hornets</button>
+          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Chicago Bulls</button>
+          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Cleveland Cavaliers</button>
+          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Dallas Mavericks</button>
+          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Denver Nuggets</button>
+          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Detroit Pistons</button>
+          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Golden State Warriors</button>
+          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Houston Rockets</button>
+          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Indiana Pacers</button>
+          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Los Angeles Clippers</button>
+          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Los Angeles Lakers</button>
+          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Memphis Grizzlies</button>
+          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Miami Heat</button>
+          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Milwaukee Bucks</button>
+          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Minnesota Timberwolves</button>
+          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">New Orleans Pelicans</button>
+          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">New York Knicks</button>
+          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Oklahoma City Thunder</button>
+          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Orlando Magic</button>
+          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Philadelphia 76ers</button>
+          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Phoenix Suns</button>
+          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Portland Trail Blazers</button>
+          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Sacramento Kings</button>
+          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">San Antonio Spurs</button>
+          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Toronto Raptors</button>
+          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Utah Jazz</button>
+          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Washington Wizards</button>
+        </div>
+      </section>
+      <footer class="modal-card-foot">
+        <button class="button is-success" onClick="TEAM_SELECTOR.changeTeams()">Select</button>
+      </footer>
+    </div>
+  </div>
+
 </body>
 </html>
