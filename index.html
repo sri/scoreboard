@@ -185,7 +185,7 @@ class Clock {
     }
   }
 
-  start() {
+  init() {
     setInterval(() => this.update(), 1000);
   }
 }
@@ -194,24 +194,17 @@ var CLOCK;
 var HOME;
 var AWAY;
 
-function Start() {
-  CLOCK = new Clock(".clock");
-  CLOCK.start();
-
+function Init() {
   HOME = new Team(".hometeam");
   AWAY = new Team(".awayteam");
-}
 
-function Pause() {
-  CLOCK.togglePause();
-}
-
-function Score() {
+  CLOCK = new Clock(".clock");
+  CLOCK.init();
 }
 
 </script>
 </head>
-<body onload="Start()">
+<body onload="Init()">
   <div class="container">
     <div class="team hometeam" onTouchStart="HOME.incrementScore()">
       <div class="boxscore">
@@ -220,7 +213,7 @@ function Score() {
       </div>
     </div>
 
-    <div class="clock paused" onTouchStart="Pause()">
+    <div class="clock paused" onTouchStart="CLOCK.togglePause()">
       <div class="gameclock">
         <span class="mins">12</span>:<span class="secs">00</span>
       </div>
