@@ -171,7 +171,6 @@ class Clock {
 
   togglePause(event) {
     if (event) event.preventDefault();
-
     this.paused = !this.paused;
     if (this.paused) {
       clearInterval(this.interval);
@@ -196,43 +195,42 @@ class Clock {
   updateClock() {
     let mins = asInt(this.gameClockMinsElt);
     let secs = asInt(this.gameClockSecsElt);
+    let quarter = asInt(this.quarterCurrentElt);
+    let shotclock = asInt(this.shotclockElt);
 
     secs -= 1;
-
-    let shotclock = asInt(this.shotclockElt);
-    if (mins === 0 && secs <= 24) {
-      // If game clock < 24, don't show shot clock.
-      shotclock = "-";
-    } else if (this.scoreUpdated) {
-      shotclock = 24;
-      this.scoreUpdated = false;
-    } else {
-      shotclock -= 1;
-    }
-    if (shotclock < 0) {
-      shotclock = 24;
-    }
-    this.shotclockElt.innerHTML = shotclock;
+    shotclock -= 1;
 
     if (secs < 0) {
       mins -= 1;
       secs = 59;
+      shotclock = 23;
     }
+
+    if (shotclock <= 0) {
+      shotclock = 24;
+    }
+
     if (mins < 0) {
-      let quarter = asInt(this.quarterCurrentElt);
+      CLOCK.pause();
+
       if (quarter < 4) {
         quarter += 1;
-        mins = MINS_PER_QUARTER;
+        mins = MINS_PER_OVERTIME;
         secs = 0;
+        shotclock = 24;
+
         this.quarterCurrentElt.innerHTML = quarter;
       } else if (HOME.getCurrentScore() === AWAY.getCurrentScore()) {
+        mins = MINS_PER_OVERTIME;
+        secs = 0;
+        shotclock = 24;
+
         // Overtime
         this.quarterElt.classList.add("is-hidden");
         this.overtimeElt.classList.remove("is-hidden");
 
         let overtime = asInt(this.overtimeCurrentElt) + 1;
-        mins = MINS_PER_OVERTIME;
-        secs = 0;
         this.overtimeCurrentElt.innerHTML = overtime;
       } else {
         // Game over -- we don't stop the interval that keeps
@@ -243,6 +241,15 @@ class Clock {
       }
     }
 
+    if (mins === 0 && shotclock >= secs) {
+      shotclock = "-";
+    } else if (this.scoreUpdated) {
+      // Reset shotclock when someone scores.
+      shotclock = 24;
+      this.scoreUpdated = false;
+    }
+
+    this.shotclockElt.innerHTML = shotclock;
     this.gameClockMinsElt.innerHTML = this.format2digit(mins);
     this.gameClockSecsElt.innerHTML = this.format2digit(secs);
   }
