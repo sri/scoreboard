@@ -26,7 +26,16 @@ body {
   font-size: 40pt;
 }
 .score {
-  font-size: 122pt;
+  display: flex;
+}
+.score .current {
+  flex: 1;
+  font-size: 222pt;
+}
+.score .twopointer, .score .threepointer {
+  flex: 1;
+  font-size: 30pt;
+  color: #333;
 }
 .clock {
   flex: 1;
@@ -71,7 +80,7 @@ function asInt(elt) {
 class Team {
   constructor(eltName) {
     this.elt = document.querySelector(eltName);
-    this.scoreElt = this.elt.querySelector(".score");
+    this.scoreElt = this.elt.querySelector(".score .current");
 
     // this.elt.ontouchstart = () => this.incrementScore();
   }
@@ -80,11 +89,25 @@ class Team {
     return asInt(this.scoreElt);
   }
 
-  incrementScore(event) {
+  threePointer(event) {
     if (event) event.preventDefault();
+    this.incrementScore(3);
 
+  }
+
+  twoPointer(event) {
+    if (event) event.preventDefault();
+    this.incrementScore(2);
+  }
+
+  onePointer(event) {
+    if (event) event.preventDefault();
+    this.incrementScore(1);
+  }
+
+  incrementScore(n) {
     let currentScore = asInt(this.scoreElt);
-    currentScore += 1;
+    currentScore += n;
     CLOCK.scoreUpdatedCallback();
     this.scoreElt.innerHTML = currentScore + "";
   }
@@ -210,10 +233,14 @@ function Init() {
 </head>
 <body onload="Init()">
   <div class="container">
-    <div class="team hometeam" onTouchStart="HOME.incrementScore(event)" onClick="HOME.incrementScore()">
+    <div class="team hometeam">
       <div class="boxscore">
         <div class="teamname">Houston Rockets</div>
-        <div class="score">0</div>
+        <div class="score">
+          <div class="twopointer" onTouchStart="HOME.twoPointer(event)" onClick="HOME.twoPointer()">+2</div>
+          <div class="current" onTouchStart="HOME.onePointer(event)" onClick="HOME.onePointer()">0</div>
+          <div class="threepointer" onTouchStart="HOME.threePointer(event)" onClick="HOME.threePointer()">+3</div>
+        </div>
       </div>
     </div>
 
@@ -226,10 +253,14 @@ function Init() {
       <div class="overtime hidden">Overtime <span class="current">0</span></div>
     </div>
 
-    <div class="team awayteam" onTouchStart="AWAY.incrementScore(event)" onclick="AWAY.incrementScore()">
+    <div class="team awayteam">
       <div class="boxscore">
         <div class="teamname">Sacremento Kings</div>
-        <div class="score">0</div>
+        <div class="score">
+          <div class="twopointer" onTouchStart="AWAY.twoPointer(event)" onClick="AWAY.twoPointer()">+2</div>
+          <div class="current" onTouchStart="AWAY.onePointer(event)" onClick="AWAY.onePointer()">0</div>
+          <div class="threepointer" onTouchStart="AWAY.threePointer(event)" onClick="AWAY.threePointer()">+3</div>
+        </div>
       </div>
     </div>
   </div>
