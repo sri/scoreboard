@@ -66,8 +66,8 @@ body {
 }
 </style>
 <script type="text/javascript">
-var MINS_PER_QUARTER = 12;
-var MINS_PER_OVERTIME = 5;
+var MINS_PER_QUARTER = 4;
+var MINS_PER_OVERTIME = 2;
 
 function asInt(elt) {
   const value = parseInt(elt.innerHTML, 10);
@@ -235,7 +235,7 @@ function Init() {
   <div class="container">
     <div class="team hometeam">
       <div class="boxscore">
-        <div class="teamname">Houston Rockets</div>
+        <div class="teamname">Milwaukee Bucks</div>
         <div class="score">
           <div class="twopointer" onTouchStart="HOME.twoPointer(event)" onClick="HOME.twoPointer()">+2</div>
           <div class="current" onTouchStart="HOME.onePointer(event)" onClick="HOME.onePointer()">0</div>
@@ -246,7 +246,7 @@ function Init() {
 
     <div class="clock paused" onTouchStart="CLOCK.togglePause(event)" onclick="CLOCK.togglePause()">
       <div class="gameclock">
-        <span class="mins">12</span>:<span class="secs">00</span>
+        <span class="mins">4</span>:<span class="secs">00</span>
       </div>
       <div class="shotclock">24</div>
       <div class="quarter">Quarter <span class="current">1</span></div>
