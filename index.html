@@ -56,8 +56,8 @@ body {
 }
 </style>
 <script type="text/javascript">
-var MINS_PER_QUARTER = 6;
-var MINS_PER_OVERTIME = 3;
+var MINS_PER_QUARTER = 12;
+var MINS_PER_OVERTIME = 5;
 
 function asInt(elt) {
   const value = parseInt(elt.innerHTML, 10);
@@ -212,7 +212,7 @@ function Score() {
 
     <div class="clock paused" onClick="Pause()">
       <div class="gameclock">
-        <span class="mins">10</span>:<span class="secs">00</span>
+        <span class="mins">12</span>:<span class="secs">00</span>
       </div>
       <div class="shotclock">24</div>
       <div class="quarter">Quarter <span class="current">1</span></div>
