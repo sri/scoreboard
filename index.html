@@ -154,6 +154,8 @@ class Clock {
     this.paused = true;
 
     this.scoreUpdated = false;
+
+    this.interval = null;
   }
 
   reset() {
@@ -172,9 +174,11 @@ class Clock {
 
     this.paused = !this.paused;
     if (this.paused) {
+      clearInterval(this.interval);
       this.elt.classList.add("paused")
     } else {
       this.elt.classList.remove("paused")
+      this.interval = setInterval(() => this.update(), 1000);
     }
   }
 
@@ -249,9 +253,6 @@ class Clock {
     }
   }
 
-  init() {
-    setInterval(() => this.update(), 1000);
-  }
 }
 
 let CLOCK,
@@ -266,7 +267,6 @@ function Init() {
   AWAY.reset();
 
   CLOCK = new Clock(".clock");
-  CLOCK.init();
   CLOCK.reset()
 
   TEAM_SELECTOR = new TeamSelector();
