@@ -1,5 +1,6 @@
 # scoreboard
 A basketball scoreboard for my little one
+See it in action: https://sri.github.io/scoreboard/index.html
 
 # Features
 - displays a game clock and a shot clock
