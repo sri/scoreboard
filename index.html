@@ -20,7 +20,7 @@ body {
 }
 .boxscore {
   border: 1px solid #aaa;
-  width: 400px;
+  width: 600px;
 }
 .teamname {
   font-size: 40pt;
@@ -63,6 +63,25 @@ body {
 }
 .hidden {
   display: none;
+}
+.hometeam {
+  position: absolute;
+  left: 5px;
+  top: 5px;
+}
+.awayteam {
+  position: absolute;
+  right: 5px;
+  top: 5px;
+}
+.clock {
+  position:absolute;
+  width:300px;
+  height:300px;
+  bottom:0px;
+  right:25%;
+  left:50%;
+  margin-left:-150px;
 }
 </style>
 <script type="text/javascript">
@@ -217,9 +236,9 @@ class Clock {
   }
 }
 
-var CLOCK;
-var HOME;
-var AWAY;
+let CLOCK,
+    HOME,
+    AWAY;
 
 function Init() {
   HOME = new Team(".hometeam");
@@ -232,37 +251,39 @@ function Init() {
 </script>
 </head>
 <body onload="Init()">
-  <div class="container">
-    <div class="team hometeam">
-      <div class="boxscore">
-        <div class="teamname">Milwaukee Bucks</div>
-        <div class="score">
-          <div class="twopointer" onTouchStart="HOME.twoPointer(event)" onClick="HOME.twoPointer()">+2</div>
-          <div class="current" onTouchStart="HOME.onePointer(event)" onClick="HOME.onePointer()">0</div>
-          <div class="threepointer" onTouchStart="HOME.threePointer(event)" onClick="HOME.threePointer()">+3</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="clock paused" onTouchStart="CLOCK.togglePause(event)" onclick="CLOCK.togglePause()">
-      <div class="gameclock">
-        <span class="mins">4</span>:<span class="secs">00</span>
-      </div>
-      <div class="shotclock">24</div>
-      <div class="quarter">Quarter <span class="current">1</span></div>
-      <div class="overtime hidden">Overtime <span class="current">0</span></div>
-    </div>
-
-    <div class="team awayteam">
-      <div class="boxscore">
-        <div class="teamname">Sacremento Kings</div>
-        <div class="score">
-          <div class="twopointer" onTouchStart="AWAY.twoPointer(event)" onClick="AWAY.twoPointer()">+2</div>
-          <div class="current" onTouchStart="AWAY.onePointer(event)" onClick="AWAY.onePointer()">0</div>
-          <div class="threepointer" onTouchStart="AWAY.threePointer(event)" onClick="AWAY.threePointer()">+3</div>
-        </div>
+  <div class="team hometeam">
+    <div class="boxscore">
+      <div class="teamname">Milwaukee Bucks</div>
+      <div class="score">
+        <div class="twopointer" onTouchStart="HOME.twoPointer(event)" onClick="HOME.twoPointer()">+2</div>
+        <div class="current" onTouchStart="HOME.onePointer(event)" onClick="HOME.onePointer()">0</div>
+        <div class="threepointer" onTouchStart="HOME.threePointer(event)" onClick="HOME.threePointer()">+3</div>
       </div>
     </div>
   </div>
+
+  <div class="team awayteam">
+    <div class="boxscore">
+      <div class="teamname">Sacremento Kings</div>
+      <div class="score">
+        <div class="twopointer" onTouchStart="AWAY.twoPointer(event)" onClick="AWAY.twoPointer()">+2</div>
+        <div class="current" onTouchStart="AWAY.onePointer(event)" onClick="AWAY.onePointer()">0</div>
+        <div class="threepointer" onTouchStart="AWAY.threePointer(event)" onClick="AWAY.threePointer()">+3</div>
+      </div>
+    </div>
+  </div>
+
+  <br/>
+
+  <div class="clock paused" onTouchStart="CLOCK.togglePause(event)" onclick="CLOCK.togglePause()">
+    <div class="gameclock">
+      <span class="mins">4</span>:<span class="secs">00</span>
+    </div>
+    <div class="shotclock">24</div>
+    <div class="quarter">Quarter <span class="current">1</span></div>
+    <div class="overtime hidden">Overtime <span class="current">0</span></div>
+  </div>
+
+
 </body>
 </html>
