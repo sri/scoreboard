@@ -159,7 +159,7 @@ class Clock {
   }
 
   reset() {
-    if (!this.paused) this.togglePause();
+    this.pause();
     this.shotclockElt.innerHTML = "24";
     this.gameClockMinsElt.innerHTML = MINS_PER_QUARTER
     this.gameClockSecsElt.innerHTML = "00";
@@ -180,6 +180,11 @@ class Clock {
       this.elt.classList.remove("paused")
       this.interval = setInterval(() => this.update(), 1000);
     }
+  }
+
+  pause() {
+    if (this.paused) return;
+    this.togglePause();
   }
 
   scoreUpdatedCallback() {
@@ -302,7 +307,7 @@ class TeamSelector {
 
   changeTeams() {
     if (!this.modal.classList.contains("is-active")) {
-      if (!CLOCK.paused) CLOCK.togglePause();
+      CLOCK.pause();
       this.modal.classList.add("is-active");
       return;
     }
