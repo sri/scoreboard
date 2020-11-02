@@ -158,6 +158,11 @@ class Clock {
     this.interval = null;
   }
 
+  nextQuarter() {
+    let quarter = asInt(this.quarterCurrentElt);
+    this.quarterCurrentElt.innerHTML = quarter + 1;
+  }
+
   reset() {
     this.pause();
     this.shotclockElt.innerHTML = "24";
@@ -390,7 +395,7 @@ class TeamSelector {
             </div>
           </div>
           <div class="tile is-child period">
-            <div class="quarter">Quarter <span class="current">1</span></div>
+            <div class="quarter"">Quarter <span class="current" onClick="CLOCK.nextQuarter()>1</span></div>
             <div class="overtime is-hidden">Overtime <span class="current">0</span></div>
           </div>
         </div>
