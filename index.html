@@ -116,7 +116,6 @@ class Team {
   threePointer(event) {
     if (event) event.preventDefault();
     this.incrementScore(3);
-
   }
 
   twoPointer(event) {
@@ -135,6 +134,10 @@ class Team {
     CLOCK.scoreUpdatedCallback();
     this.scoreElt.innerHTML = currentScore + "";
   }
+}
+
+function Buzzer() {
+  new Audio('buzzer.mp3').play();
 }
 
 class Clock {
@@ -244,6 +247,10 @@ class Clock {
         // after a "review", score is incremented).
         return;
       }
+    }
+
+    if (mins === 0 && secs === 0) {
+      Buzzer();
     }
 
     if (mins === 0 && shotclock >= secs) {
