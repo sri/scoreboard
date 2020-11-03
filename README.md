@@ -13,6 +13,7 @@ See it in action: https://sri.github.io/scoreboard/index.html
   (if you hit a buzzer beater, and then after the end of the game, the score
     is tied, unpause the clock to start overtime)
 - allows for team selection
+- buzzer sound at the end of periods
 
 - TODO: use localstorage to save state; allow selecting mins per quarter
 
