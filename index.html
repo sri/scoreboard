@@ -169,8 +169,8 @@ class Clock {
   reset() {
     this.pause();
     this.shotclockElt.innerHTML = "24";
-    this.gameClockMinsElt.innerHTML = MINS_PER_QUARTER
-    this.gameClockSecsElt.innerHTML = "00";
+    this.gameClockMinsElt.innerHTML = IsTest() ? 0 : MINS_PER_QUARTER;
+    this.gameClockSecsElt.innerHTML = IsTest() ? "10" : "00";
     this.quarterCurrentElt.innerHTML = "1";
     this.quarterElt.classList.remove("is-hidden");
     this.overtimeElt.classList.add("is-hidden");
@@ -224,14 +224,14 @@ class Clock {
 
       if (quarter < 4) {
         quarter += 1;
-        mins = MINS_PER_QUARTER;
-        secs = 0;
+        mins = IsTest() ? 0 : MINS_PER_QUARTER;
+        secs = IsTest() ? 10 : 0;
         shotclock = 24;
 
         this.quarterCurrentElt.innerHTML = quarter;
       } else if (HOME.getCurrentScore() === AWAY.getCurrentScore()) {
-        mins = MINS_PER_OVERTIME;
-        secs = 0;
+        mins = IsTest() ? 0 : MINS_PER_OVERTIME;
+        secs = IsTest() ? 10 : 0;
         shotclock = 24;
 
         // Overtime
@@ -278,8 +278,9 @@ class Clock {
   }
 }
 
-function IsDev() {
-  return window.location.protocol === "file:";
+
+function IsTest() {
+  return window.location.search === "?t";
 }
 
 let CLOCK,
@@ -299,7 +300,7 @@ function Init() {
   TEAM_SELECTOR = new TeamSelector();
 
   window.addEventListener("beforeunload", function (e) {
-    if (IsDev()) return null;
+    if (IsTest()) return null;
     var confirmationMessage = 'If you leave, your game will be lost.';
     (e || window.event).returnValue = confirmationMessage; //Gecko + IE
     return confirmationMessage; //Gecko + Webkit, Safari, Chrome etc.
