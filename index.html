@@ -136,8 +136,17 @@ class Team {
   }
 }
 
+let BUZZER = null;
+
+function AudioInit() {
+  if (BUZZER) return;
+  BUZZER = new Audio();
+  BUZZER.play();
+}
+
 function Buzzer() {
-  new Audio('buzzer.mp3').play();
+  BUZZER.src = 'buzzer.mp3';
+  BUZZER.play();
 }
 
 class Clock {
@@ -179,6 +188,11 @@ class Clock {
 
   togglePause(event) {
     if (event) event.preventDefault();
+    AudioInit();
+    this.doPause();
+  }
+
+  doPause() {
     this.paused = !this.paused;
     if (this.paused) {
       clearInterval(this.interval);
@@ -191,7 +205,7 @@ class Clock {
 
   pause() {
     if (this.paused) return;
-    this.togglePause();
+    this.doPause();
   }
 
   scoreUpdatedCallback() {
