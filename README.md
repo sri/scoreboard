@@ -6,14 +6,14 @@ See it in action: https://sri.github.io/scoreboard/index.html
 # Features
 - displays a game clock and a shot clock
 - display scores for two teams
-- shot clock will reset to 24 when
-- shot clock won't be displayed game only has that many seconds left
+- shot clock will reset to 24 when someone scores
 - clocks will pause at the end of quarters and overtime
-- overtime starts automatically when at the end of a game, score is the same
+- overtime starts automatically when at the end of a game, score is tied
   (if you hit a buzzer beater, and then after the end of the game, the score
     is tied, unpause the clock to start overtime)
-- allows for team selection
+- allows for team selection (click/touch team name)
 - buzzer sound at the end of periods
+- click on quarter to advance to next quarter
 
 - TODO: use localstorage to save state; allow selecting mins per quarter
 
