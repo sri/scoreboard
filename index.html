@@ -18,7 +18,7 @@ s.modal .teams button {
   color: green;
 }
 .score {
-  font-size: 160pt;
+  font-size: 180pt;
   text-align: center;
   border: 1px solid #4a4a4a;
 
@@ -377,7 +377,7 @@ class TeamSelector {
 </head>
 <body onload="Init()">
   <div class="columns is-gapless is-vcentered">
-    <div class="column is-one-third hometeam">
+    <div class="column is-two-fifths hometeam">
       <div class="tile is-ancestor">
         <div class="tile is-vertical is-parent">
           <div class="tile is-child">
@@ -402,7 +402,7 @@ class TeamSelector {
       </div>
     </div>
 
-    <div class="column is-one-third clock paused" onTouchStart="CLOCK.togglePause(event)" onclick="CLOCK.togglePause()">
+    <div class="column is-one-fifths clock paused" onTouchStart="CLOCK.togglePause(event)" onclick="CLOCK.togglePause()">
       <div class="tile is-ancestor">
         <div class="tile is-vertical is-parent">
           <div class="tile is-child">
@@ -423,7 +423,7 @@ class TeamSelector {
       </div>
     </div>
 
-    <div class="column is-one-third awayteam">
+    <div class="column is-two-fifths awayteam">
       <div class="tile is-ancestor">
         <div class="tile is-vertical is-parent">
           <div class="tile is-child">
