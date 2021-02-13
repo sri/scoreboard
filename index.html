@@ -91,8 +91,8 @@ const TEAMS = [
   'Washington Wizards',
 ];
 
-function asInt(elt) {
-  const value = parseInt(elt.innerHTML, 10);
+function asInt(arg) {
+  const value = parseInt(arg, 10);
   if (isNaN(value)) {
     return 0;
   }
@@ -110,7 +110,7 @@ class Team {
   }
 
   getCurrentScore() {
-    return asInt(this.scoreElt);
+    return asInt(this.scoreElt.innerHTML);
   }
 
   threePointer(event) {
@@ -129,7 +129,7 @@ class Team {
   }
 
   incrementScore(n) {
-    let currentScore = asInt(this.scoreElt);
+    let currentScore = asInt(this.scoreElt.innerHTML);
     currentScore += n;
     CLOCK.scoreUpdatedCallback();
     this.scoreElt.innerHTML = currentScore + "";
@@ -171,7 +171,7 @@ class Clock {
   }
 
   nextQuarter() {
-    let quarter = asInt(this.quarterCurrentElt);
+    let quarter = asInt(this.quarterCurrentElt.innerHTML);
     this.quarterCurrentElt.innerHTML = quarter + 1;
   }
 
@@ -215,9 +215,9 @@ class Clock {
   }
 
   updateClock() {
-    let mins = asInt(this.gameClockMinsElt);
-    let secs = asInt(this.gameClockSecsElt);
-    let quarter = asInt(this.quarterCurrentElt);
+    let mins = asInt(this.gameClockMinsElt.innerHTML);
+    let secs = asInt(this.gameClockSecsElt.innerHTML);
+    let quarter = asInt(this.quarterCurrentElt.innerHTML);
 
     let shotclock = parseInt(this.shotclockElt.innerHTML, 10);
     if (isNaN(shotclock)) {
@@ -259,7 +259,7 @@ class Clock {
         this.quarterElt.classList.add("is-hidden");
         this.overtimeElt.classList.remove("is-hidden");
 
-        let overtime = asInt(this.overtimeCurrentElt) + 1;
+        let overtime = asInt(this.overtimeCurrentElt.innerHTML) + 1;
         this.overtimeCurrentElt.innerHTML = overtime;
       } else {
         // Game over -- we don't stop the interval that keeps
