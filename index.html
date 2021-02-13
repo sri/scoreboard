@@ -91,8 +91,8 @@ const TEAMS = [
   'Washington Wizards',
 ];
 
-function asInt(elt) {
-  const value = parseInt(elt.innerHTML, 10);
+function asInt(arg) {
+  const value = parseInt(arg, 10);
   if (isNaN(value)) {
     return 0;
   }
@@ -106,11 +106,15 @@ class Team {
   }
 
   reset() {
-    //this.scoreElt.innerHTML = "0";
+    this.scoreElt.innerHTML = "0";
   }
 
   getCurrentScore() {
-    return asInt(this.scoreElt);
+    return asInt(this.scoreElt.innerHTML);
+  }
+
+   setCurrentScore(score) {
+    this.scoreElt.innerHTML = score;
   }
 
   threePointer(event) {
@@ -129,7 +133,7 @@ class Team {
   }
 
   incrementScore(n) {
-    let currentScore = asInt(this.scoreElt);
+    let currentScore = asInt(this.scoreElt.innerHTML);
     currentScore += n;
     CLOCK.scoreUpdatedCallback();
     this.scoreElt.innerHTML = currentScore + "";
@@ -171,19 +175,28 @@ class Clock {
   }
 
   nextQuarter() {
-    let quarter = asInt(this.quarterCurrentElt);
+    let quarter = asInt(this.quarterCurrentElt.innerHTML);
     this.quarterCurrentElt.innerHTML = quarter + 1;
   }
 
   reset() {
     this.pause();
     this.shotclockElt.innerHTML = "24";
-    this.gameClockMinsElt.innerHTML = IsTest() ? 0 : "0";
-    this.gameClockSecsElt.innerHTML = IsTest() ? "10" : "17";
+    this.gameClockMinsElt.innerHTML = IsTest() ? 0 : MINS_PER_QUARTER;
+    this.gameClockSecsElt.innerHTML = IsTest() ? "10" : "00";
     this.quarterCurrentElt.innerHTML = "1";
     this.quarterElt.classList.remove("is-hidden");
     this.overtimeElt.classList.add("is-hidden");
     this.overtimeCurrentElt.innerHTML = "0";
+  }
+
+  setQuarter(val) {
+    this.quarterCurrentElt.innerHTML = val;
+  }
+
+  setTime(mins, secs)  {
+    this.gameClockMinsElt.innerHTML = mins;
+    this.gameClockSecsElt.innerHTML = secs;
   }
 
   togglePause(event) {
@@ -215,9 +228,9 @@ class Clock {
   }
 
   updateClock() {
-    let mins = asInt(this.gameClockMinsElt);
-    let secs = asInt(this.gameClockSecsElt);
-    let quarter = asInt(this.quarterCurrentElt);
+    let mins = asInt(this.gameClockMinsElt.innerHTML);
+    let secs = asInt(this.gameClockSecsElt.innerHTML);
+    let quarter = asInt(this.quarterCurrentElt.innerHTML);
 
     let shotclock = parseInt(this.shotclockElt.innerHTML, 10);
     if (isNaN(shotclock)) {
@@ -259,7 +272,7 @@ class Clock {
         this.quarterElt.classList.add("is-hidden");
         this.overtimeElt.classList.remove("is-hidden");
 
-        let overtime = asInt(this.overtimeCurrentElt) + 1;
+        let overtime = asInt(this.overtimeCurrentElt.innerHTML) + 1;
         this.overtimeCurrentElt.innerHTML = overtime;
       } else {
         // Game over -- we don't stop the interval that keeps
@@ -370,6 +383,35 @@ class TeamSelector {
       AWAY.reset();
       CLOCK.reset();
     }
+
+    this.setStartingScore(HOME, "#starting-score-team1");
+    this.setStartingScore(AWAY, "#starting-score-team2");
+    this.setStartingQuarter("#starting-quarter");
+    this.setStartingTime("#starting-time");
+  }
+
+   setStartingTime(eltId) {
+     const elt = document.querySelector(eltId);
+     const value = elt.value.trim();
+     if (value === "") return;
+     const mins = value.substr(0, 2);
+     const secs = value.substr(2, 2);
+     CLOCK.setTime(mins, secs);
+   }
+
+   setStartingQuarter(eltId) {
+     const elt = document.querySelector(eltId);
+     const value = elt.value.trim();
+     if (value === "") return;
+     CLOCK.setQuarter(asInt(value));
+   }
+
+  setStartingScore(team, eltId) {
+    const elt = document.querySelector(eltId);
+    const value = elt.value.trim();
+    if (value === "") return;
+    team.setCurrentScore(asInt(value));
+    elt.value = "";
   }
 
   selectTeam(elt) {
@@ -392,7 +434,7 @@ class TeamSelector {
             <div class="teamname hometeamname" onClick="TEAM_SELECTOR.changeTeams()">Portland Trail Blazers</div>
           </div>
           <div class="tile is-child">
-            <div class="score" onTouchStart="HOME.onePointer(event)" onClick="HOME.onePointer()">49</div>
+            <div class="score" onTouchStart="HOME.onePointer(event)" onClick="HOME.onePointer()">0</div>
           </div>
           <div class="tile is-parent">
             <div class="tile is-child">
@@ -438,7 +480,7 @@ class TeamSelector {
             <div class="teamname awayteamname" onClick="TEAM_SELECTOR.changeTeams()">Los Angeles Lakers</div>
           </div>
           <div class="tile is-child">
-            <div class="score" onTouchStart="AWAY.onePointer(event)" onClick="AWAY.onePointer()">41</div>
+            <div class="score" onTouchStart="AWAY.onePointer(event)" onClick="AWAY.onePointer()">0</div>
           </div>
           <div class="tile is-parent">
             <div class="tile is-child">
@@ -498,6 +540,12 @@ class TeamSelector {
           <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Washington Wizards</button>
         </div>
       </section>
+      <section  class="modal-card-body teams">
+        <div>Starting score: Team #1: <input class="input" id="starting-score-team1" type="text" /></div>
+        <div>Starting score: Team #2: <input class="input" id="starting-score-team2" type="text" /></div>
+        <div>Quarter: <input class="input" id="starting-quarter" type="text" /></div>
+        <div>Time: <input class="input" id="starting-time" type="text" /></div>
+     </section>
       <footer class="modal-card-foot">
         <button class="button is-success" onClick="TEAM_SELECTOR.changeTeams()">Select</button>
       </footer>
