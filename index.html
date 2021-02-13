@@ -106,7 +106,7 @@ class Team {
   }
 
   reset() {
-    this.scoreElt.innerHTML = "0";
+    //this.scoreElt.innerHTML = "0";
   }
 
   getCurrentScore() {
@@ -178,8 +178,8 @@ class Clock {
   reset() {
     this.pause();
     this.shotclockElt.innerHTML = "24";
-    this.gameClockMinsElt.innerHTML = IsTest() ? 0 : MINS_PER_QUARTER;
-    this.gameClockSecsElt.innerHTML = IsTest() ? "10" : "00";
+    this.gameClockMinsElt.innerHTML = IsTest() ? 0 : "0";
+    this.gameClockSecsElt.innerHTML = IsTest() ? "10" : "17";
     this.quarterCurrentElt.innerHTML = "1";
     this.quarterElt.classList.remove("is-hidden");
     this.overtimeElt.classList.add("is-hidden");
@@ -392,7 +392,7 @@ class TeamSelector {
             <div class="teamname hometeamname" onClick="TEAM_SELECTOR.changeTeams()">Portland Trail Blazers</div>
           </div>
           <div class="tile is-child">
-            <div class="score" onTouchStart="HOME.onePointer(event)" onClick="HOME.onePointer()">0</div>
+            <div class="score" onTouchStart="HOME.onePointer(event)" onClick="HOME.onePointer()">49</div>
           </div>
           <div class="tile is-parent">
             <div class="tile is-child">
@@ -438,7 +438,7 @@ class TeamSelector {
             <div class="teamname awayteamname" onClick="TEAM_SELECTOR.changeTeams()">Los Angeles Lakers</div>
           </div>
           <div class="tile is-child">
-            <div class="score" onTouchStart="AWAY.onePointer(event)" onClick="AWAY.onePointer()">0</div>
+            <div class="score" onTouchStart="AWAY.onePointer(event)" onClick="AWAY.onePointer()">41</div>
           </div>
           <div class="tile is-parent">
             <div class="tile is-child">
