@@ -218,10 +218,18 @@ class Clock {
     let mins = asInt(this.gameClockMinsElt);
     let secs = asInt(this.gameClockSecsElt);
     let quarter = asInt(this.quarterCurrentElt);
-    let shotclock = asInt(this.shotclockElt);
+
+    let shotclock = parseInt(this.shotclockElt.innerHTML, 10);
+    if (isNaN(shotclock)) {
+      shotclock = 0;
+    } else {
+      shotclock -= 1
+      if (shotclock === 0) {
+        Buzzer();
+      }
+    }
 
     secs -= 1;
-    shotclock -= 1;
 
     if (secs < 0) {
       mins -= 1;
@@ -229,7 +237,6 @@ class Clock {
     }
 
     if (shotclock <= 0) {
-      Buzzer();
       shotclock = 24;
     }
 
