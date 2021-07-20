@@ -120,6 +120,7 @@ class Team {
   threePointer(event) {
     if (event) event.preventDefault();
     this.incrementScore(3);
+    CROWD_SOUND.play();
   }
 
   twoPointer(event) {
@@ -142,7 +143,7 @@ class Team {
 
 let BUZZER = null;
 
-function AudioInit() {
+function BuzzerInit() {
   if (BUZZER) return;
   BUZZER = new Audio();
   BUZZER.play();
@@ -150,7 +151,63 @@ function AudioInit() {
 
 function Buzzer() {
   BUZZER.src = 'buzzer.mp3';
+  BUZZER.volume = 0.1;
   BUZZER.play();
+}
+
+const ALL_CROWD_SOUNDS = [
+  'bulls',
+  'celtics',
+  'hawks',
+  'nuggets',
+  'okc',
+  'raptors',
+  'rockets',
+  'warriors'
+];
+
+class CrowdSound {
+  constructor() {
+    this.sounds = ALL_CROWD_SOUNDS.map((x) => x);
+    this.shuffle(this.sounds);
+    this.audio = new Audio();
+    this.idx = 0;
+  }
+
+  play() {
+    if (!this.audio.paused) {
+      // If already playing, don't try to play again.
+      return;
+    }
+
+    if (this.idx >= this.sounds.length) {
+      this.idx = 0;
+    }
+
+    const nextSound = this.sounds[this.idx];
+
+    this.audio.src = `crowd_sounds/${nextSound}.mp3`;
+    this.audio.volume = 0.3;
+    this.audio.play();
+
+    this.idx += 1;
+  }
+
+  stop() {
+    if (this.audio.paused) return;
+    this.audio.pause();
+    this.audio.currentTime = 0;
+  }
+
+   // https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
+   shuffle(array) {
+     for (var i = array.length - 1; i > 0; i--) {
+       var j = Math.floor(Math.random() * (i + 1));
+       var temp = array[i];
+       array[i] = array[j];
+       array[j] = temp;
+     }
+   }
 }
 
 class Clock {
@@ -201,7 +258,7 @@ class Clock {
 
   togglePause(event) {
     if (event) event.preventDefault();
-    AudioInit();
+    BuzzerInit();
     this.doPause();
   }
 
@@ -210,6 +267,7 @@ class Clock {
     if (this.paused) {
       clearInterval(this.interval);
       this.elt.classList.add("paused")
+      CROWD_SOUND.stop();
     } else {
       this.elt.classList.remove("paused")
       this.interval = setInterval(() => this.update(), 1000);
@@ -253,6 +311,10 @@ class Clock {
       shotclock = 24;
     }
 
+    if (mins <= 2) {
+      CROWD_SOUND.play();
+    }
+
     if (mins < 0) {
       CLOCK.pause();
 
@@ -279,12 +341,14 @@ class Clock {
         // calling this method. If score at some point becomes the same,
         // overtime starts (buzzer beater occurs, and a few seconds later,
         // after a "review", score is incremented).
+        CROWD_SOUND.stop();
         return;
       }
     }
 
     if (mins === 0 && secs === 0) {
       Buzzer();
+      CROWD_SOUND.stop();
     }
 
     if (mins === 0 && shotclock >= secs) {
@@ -320,7 +384,8 @@ function IsTest() {
 let CLOCK,
     HOME,
     AWAY,
-    TEAM_SELECTOR;
+    TEAM_SELECTOR,
+    CROWD_SOUND;
 
 function Init() {
   HOME = new Team(".hometeam");
@@ -332,6 +397,8 @@ function Init() {
   CLOCK.reset()
 
   TEAM_SELECTOR = new TeamSelector();
+
+  CROWD_SOUND = new CrowdSound();
 
   window.addEventListener("beforeunload", function (e) {
     if (IsTest()) return null;
