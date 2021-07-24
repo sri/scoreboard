@@ -171,6 +171,7 @@ class CrowdSound {
     this.sounds = ALL_CROWD_SOUNDS.map((x) => x);
     this.shuffle(this.sounds);
     this.audio = new Audio();
+    this.audio.play();
     this.idx = 0;
   }
 
