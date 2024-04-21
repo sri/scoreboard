@@ -7,197 +7,205 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
 <title>Scoreboard</title>
 <style type="text/css">
-html, body, .box {
-  font-family: 'Ubuntu', serif;
-  background: #100e17;
-}
-s.modal .teams button {
-  background: #eee;
-}
-.selected, .selected:active {
-  color: green;
-}
-.score {
-  font-size: 180pt;
-  text-align: center;
-  border: 1px solid #4a4a4a;
+ html, body, .box {
+   font-family: 'Ubuntu', serif;
+   background: #100e17;
+ }
+ s.modal .teams button {
+   background: #eee;
+ }
+ .selected, .selected:active {
+   color: green;
+ }
+ .score {
+   font-size: 180pt;
+   text-align: center;
+   border: 1px solid #4a4a4a;
 
-}
-.teamname {
-  text-align: center;
-  font-size: 24pt;
-  text-transform: uppercase;
-}
+ }
+ .teamname {
+   text-align: center;
+   font-size: 24pt;
+   text-transform: uppercase;
+ }
 
-.gameclock {
-  color: #b42a18;
-  font-size: 54pt;
-  text-align: center;
-}
-.shotclock {
-  color: #b42a18;
-  font-size: 44pt;
-  text-align: center;
-}
-.period {
-  text-align: center;
-  font-size: 32pt;
-}
-.twopointer, .threepointer {
-  border: 0;
-  border-radius: 0;
-  border: 1px solid #4a4a4a;
-  height: 125px;
-  background: #100e17;
-}
-.paused {
-  border: 1px solid #b42a18;
-}
+ .gameclock {
+   color: #b42a18;
+   font-size: 54pt;
+   text-align: center;
+ }
+ .shotclock {
+   color: #b42a18;
+   font-size: 44pt;
+   text-align: center;
+ }
+ .period {
+   text-align: center;
+   font-size: 32pt;
+ }
+ .twopointer, .threepointer {
+   border: 0;
+   border-radius: 0;
+   border: 1px solid #4a4a4a;
+   height: 125px;
+   background: #100e17;
+ }
+ .paused {
+   border: 1px solid #b42a18;
+ }
 </style>
 <script type="text/javascript">
-const MINS_PER_QUARTER = 12;
-const MINS_PER_OVERTIME = 5;
+ const MINS_PER_QUARTER = 12;
+ const MINS_PER_OVERTIME = 5;
 
-const TEAMS = [
-  'Atlanta Hawks',
-  'Boston Celtics',
-  'Brooklyn Nets',
-  'Charlotte Hornets',
-  'Chicago Bulls',
-  'Cleveland Cavaliers',
-  'Dallas Mavericks',
-  'Denver Nuggets',
-  'Detroit Pistons',
-  'Golden State Warriors',
-  'Houston Rockets',
-  'Indiana Pacers',
-  'Los Angeles Clippers',
-  'Los Angeles Lakers',
-  'Memphis Grizzlies',
-  'Miami Heat',
-  'Milwaukee Bucks',
-  'Minnesota Timberwolves',
-  'New Orleans Pelicans',
-  'New York Knicks',
-  'Oklahoma City Thunder',
-  'Orlando Magic',
-  'Philadelphia 76ers',
-  'Phoenix Suns',
-  'Portland Trail Blazers',
-  'Sacramento Kings',
-  'San Antonio Spurs',
-  'Toronto Raptors',
-  'Utah Jazz',
-  'Washington Wizards',
-];
+ const TEAMS = [
+   'Atlanta Hawks',
+   'Boston Celtics',
+   'Brooklyn Nets',
+   'Charlotte Hornets',
+   'Chicago Bulls',
+   'Cleveland Cavaliers',
+   'Dallas Mavericks',
+   'Denver Nuggets',
+   'Detroit Pistons',
+   'Golden State Warriors',
+   'Houston Rockets',
+   'Indiana Pacers',
+   'Los Angeles Clippers',
+   'Los Angeles Lakers',
+   'Memphis Grizzlies',
+   'Miami Heat',
+   'Milwaukee Bucks',
+   'Minnesota Timberwolves',
+   'New Orleans Pelicans',
+   'New York Knicks',
+   'Oklahoma City Thunder',
+   'Orlando Magic',
+   'Philadelphia 76ers',
+   'Phoenix Suns',
+   'Portland Trail Blazers',
+   'Sacramento Kings',
+   'San Antonio Spurs',
+   'Toronto Raptors',
+   'Utah Jazz',
+   'Washington Wizards',
+ ];
 
-function asInt(arg) {
-  const value = parseInt(arg, 10);
-  if (isNaN(value)) {
-    return 0;
-  }
-  return value;
-}
+ function asInt(arg) {
+   const value = parseInt(arg, 10);
+   if (isNaN(value)) {
+     return 0;
+   }
+   return value;
+ }
 
-class Team {
-  constructor(eltName) {
-    this.elt = document.querySelector(eltName);
-    this.scoreElt = this.elt.querySelector(".score");
-  }
+ class Team {
+   constructor(eltName) {
+     this.elt = document.querySelector(eltName);
+     this.scoreElt = this.elt.querySelector(".score");
+   }
 
-  reset() {
-    this.scoreElt.innerHTML = "0";
-  }
+   reset() {
+     this.scoreElt.innerHTML = "0";
+   }
 
-  getCurrentScore() {
-    return asInt(this.scoreElt.innerHTML);
-  }
+   getCurrentScore() {
+     return asInt(this.scoreElt.innerHTML);
+   }
 
    setCurrentScore(score) {
-    this.scoreElt.innerHTML = score;
-  }
+     this.scoreElt.innerHTML = score;
+   }
 
-  threePointer(event) {
-    if (event) event.preventDefault();
-    this.incrementScore(3);
-    CROWD_SOUND.play();
-  }
+   threePointer(event) {
+     if (event) event.preventDefault();
+     this.incrementScore(3);
+     CROWD_SOUND.play();
+   }
 
-  twoPointer(event) {
-    if (event) event.preventDefault();
-    this.incrementScore(2);
-  }
+   twoPointer(event) {
+     if (event) event.preventDefault();
+     this.incrementScore(2);
+   }
 
-  onePointer(event) {
-    if (event) event.preventDefault();
-    this.incrementScore(1);
-  }
+   onePointer(event) {
+     if (event) event.preventDefault();
+     this.incrementScore(1);
+   }
 
-  incrementScore(n) {
-    let currentScore = asInt(this.scoreElt.innerHTML);
-    currentScore += n;
-    CLOCK.scoreUpdatedCallback();
-    this.scoreElt.innerHTML = currentScore + "";
-  }
-}
+   incrementScore(n) {
+     let currentScore = asInt(this.scoreElt.innerHTML);
+     currentScore += n;
+     CLOCK.scoreUpdatedCallback();
+     this.scoreElt.innerHTML = currentScore + "";
+   }
+ }
 
-let BUZZER = null;
+ let BUZZER = null;
 
-function BuzzerInit() {
-  if (BUZZER) return;
-  BUZZER = new Audio();
-  BUZZER.play();
-}
+ function BuzzerInit() {
+   if (BUZZER) return;
+   BUZZER = new Audio();
+   BUZZER.play();
+ }
 
-function Buzzer() {
-  BUZZER.src = 'buzzer.mp3';
-  BUZZER.volume = 0.1;
-  BUZZER.play();
-}
+ function Buzzer() {
+   BUZZER.src = 'buzzer.mp3';
+   BUZZER.volume = 0.1;
+   BUZZER.play();
+ }
 
-const ALL_CROWD_SOUNDS = [
-  'bulls',
-  'celtics',
-  'hawks',
-  'nuggets',
-  'okc',
-  'raptors',
-  'rockets',
-  'warriors'
-];
+ const ALL_CROWD_SOUNDS = [
+   'bulls',
+   /* 'celtics',
+    * 'hawks',
+    * 'nuggets',
+    * 'okc',
+    * 'raptors',
+    * 'rockets',
+    * 'warriors' */
+ ];
 
-class CrowdSound {
-  constructor() {
-    this.sounds = ALL_CROWD_SOUNDS.map((x) => x);
-    this.shuffle(this.sounds);
-    this.audio = new Audio();
-    this.idx = 0;
-  }
+ class CrowdSound {
+   constructor() {
+     this.sounds = ALL_CROWD_SOUNDS.map((x) => x);
+     this.shuffle(this.sounds);
+     this.audio = null;
+     this.idx = 0;
+   }
 
-  play() {
-    if (!this.audio.paused) {
-      // If already playing, don't try to play again.
-      return;
-    }
+   play() {
+     if (this.audio === null) {
+       console.log("intializing audio...");
+       this.audio = new Audio();
+       console.log("intializing audio...done");
+     }
 
-    if (this.idx >= this.sounds.length) {
-      this.idx = 0;
-    }
+     if (!this.audio.paused) {
+       // If already playing, don't try to play again.
+       console.log('paused');
+       return;
+     }
 
-    const nextSound = this.sounds[this.idx];
+     if (this.idx >= this.sounds.length) {
+       this.idx = 0;
+     }
 
-    this.audio.src = `crowd_sounds/${nextSound}.mp3`;
-    this.audio.volume = 0.3;
-    this.audio.play();
+     const nextSound = this.sounds[this.idx];
 
-    this.idx += 1;
-  }
+     console.log('nextSound', nextSound);
+     this.audio.src = `crowd_sounds/${nextSound}.mp3`;
+     this.audio.volume = 0.3;
+     this.audio.play();
 
-  stop() {
-    if (this.audio.paused) return;
-    this.audio.pause();
-    this.audio.currentTime = 0;
-  }
+     this.idx += 1;
+   }
+
+   stop() {
+     if (this.audio.paused) return;
+     this.audio.pause();
+     this.audio.currentTime = 0;
+   }
 
    // https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
    shuffle(array) {
@@ -208,254 +216,254 @@ class CrowdSound {
        array[j] = temp;
      }
    }
-}
+ }
 
-class Clock {
-  constructor(eltName) {
-    this.elt = document.querySelector(eltName);
-    this.shotclockElt = this.elt.querySelector(".shotclock");
+ class Clock {
+   constructor(eltName) {
+     this.elt = document.querySelector(eltName);
+     this.shotclockElt = this.elt.querySelector(".shotclock");
 
-    this.gameClockElt = this.elt.querySelector(".gameclock");
-    this.gameClockMinsElt = this.gameClockElt.querySelector(".mins");
-    this.gameClockSecsElt = this.gameClockElt.querySelector(".secs");
+     this.gameClockElt = this.elt.querySelector(".gameclock");
+     this.gameClockMinsElt = this.gameClockElt.querySelector(".mins");
+     this.gameClockSecsElt = this.gameClockElt.querySelector(".secs");
 
-    this.quarterElt = this.elt.querySelector(".quarter");
-    this.quarterCurrentElt = this.quarterElt.querySelector(".current");
-    this.overtimeElt = this.elt.querySelector(".overtime");
-    this.overtimeCurrentElt = this.overtimeElt.querySelector(".current");
+     this.quarterElt = this.elt.querySelector(".quarter");
+     this.quarterCurrentElt = this.quarterElt.querySelector(".current");
+     this.overtimeElt = this.elt.querySelector(".overtime");
+     this.overtimeCurrentElt = this.overtimeElt.querySelector(".current");
 
-    this.paused = true;
+     this.paused = true;
 
-    this.scoreUpdated = false;
+     this.scoreUpdated = false;
 
-    this.interval = null;
-  }
+     this.interval = null;
+   }
 
-  nextQuarter() {
-    let quarter = asInt(this.quarterCurrentElt.innerHTML);
-    this.quarterCurrentElt.innerHTML = quarter + 1;
-  }
+   nextQuarter() {
+     let quarter = asInt(this.quarterCurrentElt.innerHTML);
+     this.quarterCurrentElt.innerHTML = quarter + 1;
+   }
 
-  reset() {
-    this.pause();
-    this.shotclockElt.innerHTML = "24";
-    this.gameClockMinsElt.innerHTML = IsTest() ? 0 : MINS_PER_QUARTER;
-    this.gameClockSecsElt.innerHTML = IsTest() ? "10" : "00";
-    this.quarterCurrentElt.innerHTML = "1";
-    this.quarterElt.classList.remove("is-hidden");
-    this.overtimeElt.classList.add("is-hidden");
-    this.overtimeCurrentElt.innerHTML = "0";
-  }
+   reset() {
+     this.pause();
+     this.shotclockElt.innerHTML = "24";
+     this.gameClockMinsElt.innerHTML = IsTest() ? 0 : MINS_PER_QUARTER;
+     this.gameClockSecsElt.innerHTML = IsTest() ? "10" : "00";
+     this.quarterCurrentElt.innerHTML = "1";
+     this.quarterElt.classList.remove("is-hidden");
+     this.overtimeElt.classList.add("is-hidden");
+     this.overtimeCurrentElt.innerHTML = "0";
+   }
 
-  setQuarter(val) {
-    this.quarterCurrentElt.innerHTML = val;
-  }
+   setQuarter(val) {
+     this.quarterCurrentElt.innerHTML = val;
+   }
 
-  setTime(mins, secs)  {
-    this.gameClockMinsElt.innerHTML = mins;
-    this.gameClockSecsElt.innerHTML = secs;
-  }
+   setTime(mins, secs)  {
+     this.gameClockMinsElt.innerHTML = mins;
+     this.gameClockSecsElt.innerHTML = secs;
+   }
 
-  togglePause(event) {
-    if (event) event.preventDefault();
-    BuzzerInit();
-    this.doPause();
-  }
+   togglePause(event) {
+     if (event) event.preventDefault();
+     BuzzerInit();
+     this.doPause();
+   }
 
-  doPause() {
-    this.paused = !this.paused;
-    if (this.paused) {
-      clearInterval(this.interval);
-      this.elt.classList.add("paused")
-      CROWD_SOUND.stop();
-    } else {
-      this.elt.classList.remove("paused")
-      this.interval = setInterval(() => this.update(), 1000);
-    }
-  }
+   doPause() {
+     this.paused = !this.paused;
+     if (this.paused) {
+       clearInterval(this.interval);
+       this.elt.classList.add("paused")
+       CROWD_SOUND.stop();
+     } else {
+       this.elt.classList.remove("paused")
+       this.interval = setInterval(() => this.update(), 1000);
+     }
+   }
 
-  pause() {
-    if (this.paused) return;
-    this.doPause();
-  }
+   pause() {
+     if (this.paused) return;
+     this.doPause();
+   }
 
-  scoreUpdatedCallback() {
-    if (this.paused) return;
-    // This will reset the shotclock.
-    this.scoreUpdated = true;
-  }
+   scoreUpdatedCallback() {
+     if (this.paused) return;
+     // This will reset the shotclock.
+     this.scoreUpdated = true;
+   }
 
-  updateClock() {
-    let mins = asInt(this.gameClockMinsElt.innerHTML);
-    let secs = asInt(this.gameClockSecsElt.innerHTML);
-    let quarter = asInt(this.quarterCurrentElt.innerHTML);
+   updateClock() {
+     let mins = asInt(this.gameClockMinsElt.innerHTML);
+     let secs = asInt(this.gameClockSecsElt.innerHTML);
+     let quarter = asInt(this.quarterCurrentElt.innerHTML);
 
-    let shotclock = parseInt(this.shotclockElt.innerHTML, 10);
-    if (isNaN(shotclock)) {
-      shotclock = 0;
-    } else {
-      shotclock -= 1
-      if (shotclock === 0) {
-        Buzzer();
-      }
-    }
+     let shotclock = parseInt(this.shotclockElt.innerHTML, 10);
+     if (isNaN(shotclock)) {
+       shotclock = 0;
+     } else {
+       shotclock -= 1
+       if (shotclock === 0) {
+         Buzzer();
+       }
+     }
 
-    secs -= 1;
+     secs -= 1;
 
-    if (secs < 0) {
-      mins -= 1;
-      secs = 59;
-    }
+     if (secs < 0) {
+       mins -= 1;
+       secs = 59;
+     }
 
-    if (shotclock <= 0) {
-      shotclock = 24;
-    }
+     if (shotclock <= 0) {
+       shotclock = 24;
+     }
 
-    if (mins <= 2) {
-      CROWD_SOUND.play();
-    }
+     if (mins <= 2) {
+       CROWD_SOUND.play();
+     }
 
-    if (mins < 0) {
-      CLOCK.pause();
+     if (mins < 0) {
+       CLOCK.pause();
 
-      if (quarter < 4) {
-        quarter += 1;
-        mins = IsTest() ? 0 : MINS_PER_QUARTER;
-        secs = IsTest() ? 10 : 0;
-        shotclock = 24;
+       if (quarter < 4) {
+         quarter += 1;
+         mins = IsTest() ? 0 : MINS_PER_QUARTER;
+         secs = IsTest() ? 10 : 0;
+         shotclock = 24;
 
-        this.quarterCurrentElt.innerHTML = quarter;
-      } else if (HOME.getCurrentScore() === AWAY.getCurrentScore()) {
-        mins = IsTest() ? 0 : MINS_PER_OVERTIME;
-        secs = IsTest() ? 10 : 0;
-        shotclock = 24;
+         this.quarterCurrentElt.innerHTML = quarter;
+       } else if (HOME.getCurrentScore() === AWAY.getCurrentScore()) {
+         mins = IsTest() ? 0 : MINS_PER_OVERTIME;
+         secs = IsTest() ? 10 : 0;
+         shotclock = 24;
 
-        // Overtime
-        this.quarterElt.classList.add("is-hidden");
-        this.overtimeElt.classList.remove("is-hidden");
+         // Overtime
+         this.quarterElt.classList.add("is-hidden");
+         this.overtimeElt.classList.remove("is-hidden");
 
-        let overtime = asInt(this.overtimeCurrentElt.innerHTML) + 1;
-        this.overtimeCurrentElt.innerHTML = overtime;
-      } else {
-        // Game over -- we don't stop the interval that keeps
-        // calling this method. If score at some point becomes the same,
-        // overtime starts (buzzer beater occurs, and a few seconds later,
-        // after a "review", score is incremented).
-        CROWD_SOUND.stop();
-        return;
-      }
-    }
+         let overtime = asInt(this.overtimeCurrentElt.innerHTML) + 1;
+         this.overtimeCurrentElt.innerHTML = overtime;
+       } else {
+         // Game over -- we don't stop the interval that keeps
+         // calling this method. If score at some point becomes the same,
+         // overtime starts (buzzer beater occurs, and a few seconds later,
+         // after a "review", score is incremented).
+         CROWD_SOUND.stop();
+         return;
+       }
+     }
 
-    if (mins === 0 && secs === 0) {
-      Buzzer();
-      CROWD_SOUND.stop();
-    }
+     if (mins === 0 && secs === 0) {
+       Buzzer();
+       CROWD_SOUND.stop();
+     }
 
-    if (mins === 0 && shotclock >= secs) {
-      shotclock = "-";
-    } else if (this.scoreUpdated) {
-      // Reset shotclock when someone scores.
-      shotclock = 24;
-      this.scoreUpdated = false;
-    }
+     if (mins === 0 && shotclock >= secs) {
+       shotclock = "-";
+     } else if (this.scoreUpdated) {
+       // Reset shotclock when someone scores.
+       shotclock = 24;
+       this.scoreUpdated = false;
+     }
 
-    this.shotclockElt.innerHTML = shotclock;
-    this.gameClockMinsElt.innerHTML = this.format2digit(mins);
-    this.gameClockSecsElt.innerHTML = this.format2digit(secs);
-  }
+     this.shotclockElt.innerHTML = shotclock;
+     this.gameClockMinsElt.innerHTML = this.format2digit(mins);
+     this.gameClockSecsElt.innerHTML = this.format2digit(secs);
+   }
 
-  format2digit(n) {
-    if (n < 10) return '0' + n;
-    return n;
-  }
+   format2digit(n) {
+     if (n < 10) return '0' + n;
+     return n;
+   }
 
-  update() {
-    if (!this.paused) {
-      this.updateClock();
-    }
-  }
-}
+   update() {
+     if (!this.paused) {
+       this.updateClock();
+     }
+   }
+ }
 
 
-function IsTest() {
-  return window.location.search === "?t";
-}
+ function IsTest() {
+   return window.location.search === "?t";
+ }
 
-let CLOCK,
-    HOME,
-    AWAY,
-    TEAM_SELECTOR,
-    CROWD_SOUND;
+ let CLOCK,
+     HOME,
+     AWAY,
+     TEAM_SELECTOR,
+     CROWD_SOUND;
 
-function Init() {
-  HOME = new Team(".hometeam");
-  AWAY = new Team(".awayteam");
-  HOME.reset();
-  AWAY.reset();
+ function Init() {
+   HOME = new Team(".hometeam");
+   AWAY = new Team(".awayteam");
+   HOME.reset();
+   AWAY.reset();
 
-  CLOCK = new Clock(".clock");
-  CLOCK.reset()
+   CLOCK = new Clock(".clock");
+   CLOCK.reset()
 
-  TEAM_SELECTOR = new TeamSelector();
+   TEAM_SELECTOR = new TeamSelector();
 
-  CROWD_SOUND = new CrowdSound();
+   CROWD_SOUND = new CrowdSound();
 
-  window.addEventListener("beforeunload", function (e) {
-    if (IsTest()) return null;
-    var confirmationMessage = 'If you leave, your game will be lost.';
-    (e || window.event).returnValue = confirmationMessage; //Gecko + IE
-    return confirmationMessage; //Gecko + Webkit, Safari, Chrome etc.
-  });
-}
+   window.addEventListener("beforeunload", function (e) {
+     if (IsTest()) return null;
+     var confirmationMessage = 'If you leave, your game will be lost.';
+     (e || window.event).returnValue = confirmationMessage; //Gecko + IE
+     return confirmationMessage; //Gecko + Webkit, Safari, Chrome etc.
+   });
+ }
 
-class TeamSelector {
-  constructor() {
-    this.modal = document.querySelector(".modal");
-    this.allTeams = document.querySelectorAll(".modal .teams button");
-  }
+ class TeamSelector {
+   constructor() {
+     this.modal = document.querySelector(".modal");
+     this.allTeams = document.querySelectorAll(".modal .teams button");
+   }
 
-  deselectAll() {
-    for (let i = 0; i < this.allTeams.length; i += 1) {
-      this.allTeams[i].classList.remove("is-primary");
-    }
-  }
+   deselectAll() {
+     for (let i = 0; i < this.allTeams.length; i += 1) {
+       this.allTeams[i].classList.remove("is-primary");
+     }
+   }
 
-  getAllSelected() {
-    const result = [];
-    for (let i = 0; i < this.allTeams.length; i += 1) {
-      if (this.allTeams[i].classList.contains("is-primary")) {
-        result.push(this.allTeams[i].innerHTML);
-      }
-    }
-    return result;
-  }
+   getAllSelected() {
+     const result = [];
+     for (let i = 0; i < this.allTeams.length; i += 1) {
+       if (this.allTeams[i].classList.contains("is-primary")) {
+         result.push(this.allTeams[i].innerHTML);
+       }
+     }
+     return result;
+   }
 
-  changeTeams() {
-    if (!this.modal.classList.contains("is-active")) {
-      CLOCK.pause();
-      this.modal.classList.add("is-active");
-      return;
-    }
+   changeTeams() {
+     if (!this.modal.classList.contains("is-active")) {
+       CLOCK.pause();
+       this.modal.classList.add("is-active");
+       return;
+     }
 
-    const selected = this.getAllSelected();
-    this.modal.classList.remove("is-active");
-    this.deselectAll();
+     const selected = this.getAllSelected();
+     this.modal.classList.remove("is-active");
+     this.deselectAll();
 
-    if (selected.length === 2) {
-      var home = selected[0];
-      var away = selected[1];
-      document.querySelector(".hometeamname").innerHTML = home;
-      document.querySelector(".awayteamname").innerHTML = away;
-      HOME.reset();
-      AWAY.reset();
-      CLOCK.reset();
-    }
+     if (selected.length === 2) {
+       var home = selected[0];
+       var away = selected[1];
+       document.querySelector(".hometeamname").innerHTML = home;
+       document.querySelector(".awayteamname").innerHTML = away;
+       HOME.reset();
+       AWAY.reset();
+       CLOCK.reset();
+     }
 
-    this.setStartingScore(HOME, "#starting-score-team1");
-    this.setStartingScore(AWAY, "#starting-score-team2");
-    this.setStartingQuarter("#starting-quarter");
-    this.setStartingTime("#starting-time");
-  }
+     this.setStartingScore(HOME, "#starting-score-team1");
+     this.setStartingScore(AWAY, "#starting-score-team2");
+     this.setStartingQuarter("#starting-quarter");
+     this.setStartingTime("#starting-time");
+   }
 
    setStartingTime(eltId) {
      const elt = document.querySelector(eltId);
@@ -473,23 +481,23 @@ class TeamSelector {
      CLOCK.setQuarter(asInt(value));
    }
 
-  setStartingScore(team, eltId) {
-    const elt = document.querySelector(eltId);
-    const value = elt.value.trim();
-    if (value === "") return;
-    team.setCurrentScore(asInt(value));
-    elt.value = "";
-  }
+   setStartingScore(team, eltId) {
+     const elt = document.querySelector(eltId);
+     const value = elt.value.trim();
+     if (value === "") return;
+     team.setCurrentScore(asInt(value));
+     elt.value = "";
+   }
 
-  selectTeam(elt) {
-    if (elt.classList.contains("is-primary")) {
-      elt.classList.remove("is-primary");
-    } else {
-      if (this.getAllSelected().length === 2) this.deselectAll();
-      elt.classList.add("is-primary");
-    }
-  }
-}
+   selectTeam(elt) {
+     if (elt.classList.contains("is-primary")) {
+       elt.classList.remove("is-primary");
+     } else {
+       if (this.getAllSelected().length === 2) this.deselectAll();
+       elt.classList.add("is-primary");
+     }
+   }
+ }
 </script>
 </head>
 <body onload="Init()">
