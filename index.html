@@ -109,6 +109,7 @@
    constructor(eltName) {
      this.elt = document.querySelector(eltName);
      this.scoreElt = this.elt.querySelector(".score");
+     this.otherTeam = null;
    }
 
    reset() {
@@ -127,11 +128,13 @@
      if (event) event.preventDefault();
      this.incrementScore(3);
      CROWD_SOUND.play();
+     TEAM_WITH_BALL = this.otherTeam;
    }
 
    twoPointer(event) {
      if (event) event.preventDefault();
      this.incrementScore(2);
+     TEAM_WITH_BALL = this.otherTeam;
    }
 
    onePointer(event) {
@@ -144,6 +147,10 @@
      currentScore += n;
      CLOCK.scoreUpdatedCallback();
      this.scoreElt.innerHTML = currentScore + "";
+   }
+
+   setOtherTeam(other) {
+     this.otherTeam = other;
    }
  }
 
@@ -399,11 +406,15 @@
      HOME,
      AWAY,
      TEAM_SELECTOR,
-     CROWD_SOUND;
+     CROWD_SOUND,
+     TEAM_WITH_BALL;
 
  function Init() {
    HOME = new Team(".hometeam");
    AWAY = new Team(".awayteam");
+   TEAM_WITH_BALL = HOME;
+   HOME.setOtherTeam(AWAY);
+   AWAY.setOtherTeam(HOME);
    HOME.reset();
    AWAY.reset();
 
@@ -641,6 +652,85 @@
       </footer>
     </div>
   </div>
+  <div id="error"></div>
+  <div id="transcript"></div>
+  <script>
+   // Check for browser support
+   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
+   if (!SpeechRecognition) {
+     document.getElementById('error').style.display = 'block';
+     document.getElementById('error').textContent = 'Speech recognition is not supported in this browser. Please use Chrome or Safari (iOS 14.5+).';
+   } else {
+     const recognition = new SpeechRecognition();
+     const transcript = document.getElementById('transcript');
+     const errorDiv = document.getElementById('error');
+
+     // Configure recognition
+     recognition.continuous = true;
+     recognition.interimResults = false;
+     recognition.lang = 'en-US';
+
+     let finalTranscript = '';
+
+     // Start recognition
+     try {
+       recognition.start();
+       errorDiv.style.display = 'none';
+     } catch (e) {
+       console.error('Error starting recognition:', e);
+       error.innerHTML = `Error starting recognition: ${e}`;
+     }
+
+     // Handle results
+     recognition.onresult = (event) => {
+       let interimTranscript = '';
+
+       console.log(event);
+       for (let i = event.resultIndex; i < event.results.length; i++) {
+         const transcriptPiece = event.results[i][0].transcript;
+         if (event.results[i].isFinal) {
+           finalTranscript = transcriptPiece + ' ';
+         } else {
+         }
+
+       }
+       console.log("got final", finalTranscript);
+       if (/two/i.test(finalTranscript)) {
+         TEAM_WITH_BALL.twoPointer();
+       } else if (/three/i.test(finalTranscript)) {
+          TEAM_WITH_BALL.threePointer();
+       }
+
+       // Display both final and interim results
+       transcript.innerHTML = finalTranscript +
+                     (interimTranscript ? '<span class="interim">' + interimTranscript + '</span>' : '');
+     };
+
+     // Handle errors
+     recognition.onerror = (event) => {
+       console.error('Recognition error:', event.error);
+       errorDiv.style.display = 'block';
+
+       switch(event.error) {
+         case 'no-speech':
+           errorDiv.textContent = 'No speech detected. Please try again.';
+           break;
+         case 'audio-capture':
+           errorDiv.textContent = 'No microphone detected. Please check your microphone.';
+           break;
+         case 'not-allowed':
+           errorDiv.textContent = 'Microphone access denied. Please allow microphone access.';
+           break;
+         default:
+           errorDiv.textContent = 'Error: ' + event.error;
+       }
+     };
+
+     // Handle end of recognition
+     recognition.onend = () => {
+     };
+   }
+  </script>
 </body>
 </html>
