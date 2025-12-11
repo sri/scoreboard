@@ -11,8 +11,56 @@
    font-family: 'Ubuntu', serif;
    background: #0a0a0f;
  }
- s.modal .teams button {
-   background: #eee;
+ .modal-card {
+   background: #1a1a24;
+ }
+ .modal-card-head {
+   background: linear-gradient(145deg, #2a2a38 0%, #1a1a24 100%);
+   border-bottom: 2px solid #FF8C00;
+ }
+ .modal-card-title {
+   color: #FFD700;
+   font-weight: 700;
+   font-size: 24pt;
+ }
+ .modal-card-body {
+   background: #1a1a24;
+   color: #E8E8E8;
+ }
+ .modal-card-foot {
+   background: #1a1a24;
+   border-top: 1px solid #3a3a4a;
+ }
+ .teams {
+   padding: 20px;
+ }
+ .teams .field {
+   display: grid !important;
+   grid-template-columns: repeat(2, 1fr) !important;
+   gap: 12px !important;
+ }
+ .teams button {
+   padding: 16px 20px;
+   border: 2px solid transparent;
+   border-radius: 8px;
+   font-size: 14pt;
+   font-weight: 700;
+   color: #ffffff;
+   text-align: left;
+   transition: all 0.2s ease;
+   cursor: pointer;
+   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+ }
+ .teams button:hover {
+   transform: translateY(-2px);
+   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+   border-color: #FFD700;
+ }
+ .teams button.is-primary {
+   border-color: #FFD700;
+   box-shadow: 0 0 20px rgba(255, 215, 0, 0.4), 0 4px 12px rgba(0, 0, 0, 0.6);
+   transform: scale(1.05);
  }
  .selected, .selected:active {
    color: green;
@@ -49,6 +97,17 @@
      0 2px 8px rgba(0, 0, 0, 0.8);
    padding: 10px 0;
    letter-spacing: 1px;
+   cursor: pointer;
+   transition: all 0.2s ease;
+   border-radius: 8px;
+ }
+ .teamname:hover {
+   transform: scale(1.05);
+   text-shadow:
+     0 0 20px currentColor,
+     0 0 30px currentColor,
+     0 2px 8px rgba(0, 0, 0, 0.8);
+   background: rgba(255, 255, 255, 0.05);
  }
 
  .gameclock {
@@ -90,10 +149,9 @@
      0 2px 4px rgba(0, 0, 0, 0.8);
  }
  .twopointer {
-   border: 3px solid #4A90E2;
    border-radius: 12px;
    height: 125px;
-   background: linear-gradient(145deg, #2563EB 0%, #1E40AF 100%);
+   background: linear-gradient(145deg, #1a1a24 0%, #0f0f18 100%);
    color: #ffffff;
    font-size: 22pt;
    font-weight: 900;
@@ -108,10 +166,9 @@
    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
  }
  .threepointer {
-   border: 3px solid #F59E0B;
    border-radius: 12px;
    height: 125px;
-   background: linear-gradient(145deg, #F97316 0%, #EA580C 100%);
+   background: linear-gradient(145deg, #1a1a24 0%, #0f0f18 100%);
    color: #ffffff;
    font-size: 22pt;
    font-weight: 900;
@@ -589,7 +646,43 @@
  class TeamSelector {
    constructor() {
      this.modal = document.querySelector(".modal");
+     this.populateTeams();
      this.allTeams = document.querySelectorAll(".modal .teams button");
+   }
+
+   populateTeams() {
+     const teamsContainer = document.querySelector(".modal .teams .field");
+     teamsContainer.innerHTML = '';
+
+     // Sort teams alphabetically
+     const sortedTeams = [...TEAMS].sort();
+
+     sortedTeams.forEach(team => {
+       const button = document.createElement('button');
+       button.className = 'button';
+       button.textContent = team;
+       button.onclick = () => this.selectTeam(button);
+
+       // Apply team color as background
+       if (TEAM_COLORS[team]) {
+         const color = TEAM_COLORS[team];
+         button.style.background = color;
+
+         // Darken the color for hover effect
+         button.onmouseenter = function() {
+           this.style.filter = 'brightness(1.2)';
+         };
+         button.onmouseleave = function() {
+           if (!this.classList.contains('is-primary')) {
+             this.style.filter = 'brightness(1)';
+           }
+         };
+       } else {
+         button.style.background = '#3a3a4a';
+       }
+
+       teamsContainer.appendChild(button);
+     });
    }
 
    deselectAll() {
@@ -722,7 +815,7 @@
             </div>
           </div>
           <div class="tile is-child period">
-            <div class="quarter">Quarter <span class="current" onClick="CLOCK.nextQuarter()">1</span></div>
+            <div class="quarter">Q<span class="current" onClick="CLOCK.nextQuarter()">1</span></div>
             <div class="overtime is-hidden">Overtime <span class="current">0</span></div>
           </div>
         </div>
@@ -760,59 +853,33 @@
     <div class="modal-card">
       <header class="modal-card-head">
         <p class="modal-card-title">Select Teams</p>
-        <button class="delete" aria-label="close"></button>
+        <button class="delete" aria-label="close" onClick="TEAM_SELECTOR.modal.classList.remove('is-active')"></button>
       </header>
       <section class="modal-card-body teams">
         <div class="field is-grouped is-grouped-multiline">
-          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Atlanta Hawks</button>
-          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Boston Celtics</button>
-          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Brooklyn Nets</button>
-          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Charlotte Hornets</button>
-          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Chicago Bulls</button>
-          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Cleveland Cavaliers</button>
-          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Dallas Mavericks</button>
-          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Denver Nuggets</button>
-          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Detroit Pistons</button>
-          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Golden State Warriors</button>
-          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Houston Rockets</button>
-          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Indiana Pacers</button>
-          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Los Angeles Clippers</button>
-          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Los Angeles Lakers</button>
-          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Memphis Grizzlies</button>
-          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Miami Heat</button>
-          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Milwaukee Bucks</button>
-          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Minnesota Timberwolves</button>
-          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">New Orleans Pelicans</button>
-          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">New York Knicks</button>
-          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Oklahoma City Thunder</button>
-          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Orlando Magic</button>
-          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Philadelphia 76ers</button>
-          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Phoenix Suns</button>
-          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Portland Trail Blazers</button>
-          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Sacramento Kings</button>
-          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">San Antonio Spurs</button>
-          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Toronto Raptors</button>
-          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Utah Jazz</button>
-          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Washington Wizards</button>
-          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Team LeBron</button>
-          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Team Curry</button>
-          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Team G</button>
-          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Team USA</button>
-          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Team Germany</button>
-          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Team France</button>
-          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Team Canada</button>
-          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Team YMCA 1</button>
-          <button class="button" onClick="TEAM_SELECTOR.selectTeam(this)">Team YMCA 2</button>
+          <!-- Teams will be populated dynamically -->
         </div>
       </section>
-      <section  class="modal-card-body teams">
-        <div>Starting score: Team #1: <input class="input" id="starting-score-team1" type="text" /></div>
-        <div>Starting score: Team #2: <input class="input" id="starting-score-team2" type="text" /></div>
-        <div>Quarter: <input class="input" id="starting-quarter" type="text" /></div>
-        <div>Time: <input class="input" id="starting-time" type="text" /></div>
+      <section class="modal-card-body" style="padding: 20px;">
+        <div class="field">
+          <label class="label" style="color: #FFD700; font-weight: 600;">Starting Score - Team #1</label>
+          <input class="input" id="starting-score-team1" type="text" placeholder="e.g., 50" style="background: #2a2a38; color: #E8E8E8; border: 2px solid #3a3a4a; border-radius: 6px;" />
+        </div>
+        <div class="field">
+          <label class="label" style="color: #FFD700; font-weight: 600;">Starting Score - Team #2</label>
+          <input class="input" id="starting-score-team2" type="text" placeholder="e.g., 45" style="background: #2a2a38; color: #E8E8E8; border: 2px solid #3a3a4a; border-radius: 6px;" />
+        </div>
+        <div class="field">
+          <label class="label" style="color: #FFD700; font-weight: 600;">Quarter</label>
+          <input class="input" id="starting-quarter" type="text" placeholder="e.g., 3" style="background: #2a2a38; color: #E8E8E8; border: 2px solid #3a3a4a; border-radius: 6px;" />
+        </div>
+        <div class="field">
+          <label class="label" style="color: #FFD700; font-weight: 600;">Time (MMSS)</label>
+          <input class="input" id="starting-time" type="text" placeholder="e.g., 0730 for 7:30" style="background: #2a2a38; color: #E8E8E8; border: 2px solid #3a3a4a; border-radius: 6px;" />
+        </div>
      </section>
       <footer class="modal-card-foot">
-        <button class="button is-success" onClick="TEAM_SELECTOR.changeTeams()">Select</button>
+        <button class="button is-success" onClick="TEAM_SELECTOR.changeTeams()" style="background: linear-gradient(145deg, #10B981 0%, #059669 100%); color: white; font-weight: 700; font-size: 16pt; padding: 24px 48px; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);">Select Teams</button>
       </footer>
     </div>
   </div>
