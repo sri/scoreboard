@@ -95,11 +95,34 @@
    cursor: pointer;
    transition: all 0.2s ease;
    border-radius: 8px;
+   position: relative;
  }
  .teamname:hover {
    transform: scale(1.05);
    filter: brightness(1.2);
    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+ }
+ .ball-indicator {
+   position: absolute;
+   right: 20px;
+   top: 50%;
+   transform: translateY(-50%);
+   font-size: 28pt;
+   opacity: 0;
+   transition: opacity 0.3s ease;
+   filter: drop-shadow(0 0 10px rgba(255, 140, 0, 0.8));
+   animation: pulse 1.5s ease-in-out infinite;
+ }
+ .ball-indicator.active {
+   opacity: 1;
+ }
+ @keyframes pulse {
+   0%, 100% {
+     filter: drop-shadow(0 0 10px rgba(255, 140, 0, 0.8));
+   }
+   50% {
+     filter: drop-shadow(0 0 20px rgba(255, 140, 0, 1));
+   }
  }
 
  .gameclock {
@@ -297,6 +320,19 @@
    return value;
  }
 
+ function updateBallIndicator() {
+   const homeBall = document.querySelector('.home-ball');
+   const awayBall = document.querySelector('.away-ball');
+
+   if (TEAM_WITH_BALL === HOME) {
+     homeBall.classList.add('active');
+     awayBall.classList.remove('active');
+   } else {
+     awayBall.classList.add('active');
+     homeBall.classList.remove('active');
+   }
+ }
+
  class Team {
    constructor(eltName) {
      this.elt = document.querySelector(eltName);
@@ -321,12 +357,14 @@
      this.incrementScore(3);
      CROWD_SOUND.play();
      TEAM_WITH_BALL = this.otherTeam;
+     updateBallIndicator();
    }
 
    twoPointer(event) {
      if (event) event.preventDefault();
      this.incrementScore(2);
      TEAM_WITH_BALL = this.otherTeam;
+     updateBallIndicator();
    }
 
    onePointer(event) {
@@ -627,6 +665,9 @@
      document.querySelector(".awayteamname").style.background = TEAM_COLORS[awayTeamName];
    }
 
+   // Set initial ball indicator
+   updateBallIndicator();
+
    window.addEventListener("beforeunload", function (e) {
      if (IsTest()) return null;
      var confirmationMessage = 'If you leave, your game will be lost.';
@@ -696,8 +737,14 @@
        var away = selected[1];
        const homeElt = document.querySelector(".hometeamname");
        const awayElt = document.querySelector(".awayteamname");
+
+       // Update team names while preserving ball indicators
+       const homeBall = homeElt.querySelector('.home-ball');
+       const awayBall = awayElt.querySelector('.away-ball');
        homeElt.innerHTML = home;
        awayElt.innerHTML = away;
+       homeElt.appendChild(homeBall);
+       awayElt.appendChild(awayBall);
 
        // Apply team colors as background
        if (TEAM_COLORS[home]) {
@@ -710,6 +757,10 @@
        HOME.reset();
        AWAY.reset();
        CLOCK.reset();
+
+       // Reset ball possession to home team
+       TEAM_WITH_BALL = HOME;
+       updateBallIndicator();
      }
 
      this.setStartingScore(HOME, "#starting-score-team1");
@@ -765,11 +816,15 @@
      const home = shuffled[0];
      const away = shuffled[1];
 
-     // Update team names
+     // Update team names while preserving ball indicators
      const homeElt = document.querySelector(".hometeamname");
      const awayElt = document.querySelector(".awayteamname");
+     const homeBall = homeElt.querySelector('.home-ball');
+     const awayBall = awayElt.querySelector('.away-ball');
      homeElt.innerHTML = home;
      awayElt.innerHTML = away;
+     homeElt.appendChild(homeBall);
+     awayElt.appendChild(awayBall);
 
      // Apply team colors as background
      if (TEAM_COLORS[home]) {
@@ -784,7 +839,11 @@
      AWAY.reset();
      CLOCK.reset();
 
-     // Close modal
+     // Reset ball possession to home team
+     TEAM_WITH_BALL = HOME;
+     updateBallIndicator();
+
+     // Close modal and deselect teams
      this.modal.classList.remove("is-active");
      this.deselectAll();
    }
@@ -797,7 +856,10 @@
       <div class="tile is-ancestor">
         <div class="tile is-vertical is-parent">
           <div class="tile is-child">
-            <div class="teamname hometeamname" onClick="TEAM_SELECTOR.changeTeams()">Portland Trail Blazers</div>
+            <div class="teamname hometeamname" onClick="TEAM_SELECTOR.changeTeams()">
+              Portland Trail Blazers
+              <span class="ball-indicator home-ball">🏀</span>
+            </div>
           </div>
           <div class="tile is-child">
             <div class="score" onTouchStart="HOME.onePointer(event)" onClick="HOME.onePointer()">0</div>
@@ -843,7 +905,10 @@
       <div class="tile is-ancestor">
         <div class="tile is-vertical is-parent">
           <div class="tile is-child">
-            <div class="teamname awayteamname" onClick="TEAM_SELECTOR.changeTeams()">Los Angeles Lakers</div>
+            <div class="teamname awayteamname" onClick="TEAM_SELECTOR.changeTeams()">
+              Los Angeles Lakers
+              <span class="ball-indicator away-ball">🏀</span>
+            </div>
           </div>
           <div class="tile is-child">
             <div class="score" onTouchStart="AWAY.onePointer(event)" onClick="AWAY.onePointer()">0</div>
