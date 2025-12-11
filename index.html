@@ -51,11 +51,7 @@
    cursor: pointer;
    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
- }
- .teams button:hover {
-   transform: translateY(-2px);
-   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
-   border-color: #FFD700;
+   background: #3a3a4a;
  }
  .teams button.is-primary {
    border-color: #FFD700;
@@ -92,9 +88,8 @@
    font-size: 24pt;
    text-transform: uppercase;
    font-weight: 900;
-   text-shadow:
-     0 0 10px currentColor,
-     0 2px 8px rgba(0, 0, 0, 0.8);
+   color: #ffffff;
+   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
    padding: 10px 0;
    letter-spacing: 1px;
    cursor: pointer;
@@ -103,11 +98,8 @@
  }
  .teamname:hover {
    transform: scale(1.05);
-   text-shadow:
-     0 0 20px currentColor,
-     0 0 30px currentColor,
-     0 2px 8px rgba(0, 0, 0, 0.8);
-   background: rgba(255, 255, 255, 0.05);
+   filter: brightness(1.2);
+   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
  }
 
  .gameclock {
@@ -629,10 +621,10 @@
    const homeTeamName = document.querySelector(".hometeamname").innerHTML;
    const awayTeamName = document.querySelector(".awayteamname").innerHTML;
    if (TEAM_COLORS[homeTeamName]) {
-     document.querySelector(".hometeamname").style.color = TEAM_COLORS[homeTeamName];
+     document.querySelector(".hometeamname").style.background = TEAM_COLORS[homeTeamName];
    }
    if (TEAM_COLORS[awayTeamName]) {
-     document.querySelector(".awayteamname").style.color = TEAM_COLORS[awayTeamName];
+     document.querySelector(".awayteamname").style.background = TEAM_COLORS[awayTeamName];
    }
 
    window.addEventListener("beforeunload", function (e) {
@@ -663,23 +655,8 @@
        button.textContent = team;
        button.onclick = () => this.selectTeam(button);
 
-       // Apply team color as background
-       if (TEAM_COLORS[team]) {
-         const color = TEAM_COLORS[team];
-         button.style.background = color;
-
-         // Darken the color for hover effect
-         button.onmouseenter = function() {
-           this.style.filter = 'brightness(1.2)';
-         };
-         button.onmouseleave = function() {
-           if (!this.classList.contains('is-primary')) {
-             this.style.filter = 'brightness(1)';
-           }
-         };
-       } else {
-         button.style.background = '#3a3a4a';
-       }
+       // Store team name as data attribute for later color application
+       button.dataset.team = team;
 
        teamsContainer.appendChild(button);
      });
@@ -688,6 +665,8 @@
    deselectAll() {
      for (let i = 0; i < this.allTeams.length; i += 1) {
        this.allTeams[i].classList.remove("is-primary");
+       // Reset to gray background
+       this.allTeams[i].style.background = '#3a3a4a';
      }
    }
 
@@ -720,12 +699,12 @@
        homeElt.innerHTML = home;
        awayElt.innerHTML = away;
 
-       // Apply team colors
+       // Apply team colors as background
        if (TEAM_COLORS[home]) {
-         homeElt.style.color = TEAM_COLORS[home];
+         homeElt.style.background = TEAM_COLORS[home];
        }
        if (TEAM_COLORS[away]) {
-         awayElt.style.color = TEAM_COLORS[away];
+         awayElt.style.background = TEAM_COLORS[away];
        }
 
        HOME.reset();
@@ -766,10 +745,48 @@
    selectTeam(elt) {
      if (elt.classList.contains("is-primary")) {
        elt.classList.remove("is-primary");
+       // Reset to gray when deselected
+       elt.style.background = '#3a3a4a';
      } else {
        if (this.getAllSelected().length === 2) this.deselectAll();
        elt.classList.add("is-primary");
+
+       // Apply team color when selected
+       const teamName = elt.dataset.team;
+       if (TEAM_COLORS[teamName]) {
+         elt.style.background = TEAM_COLORS[teamName];
+       }
      }
+   }
+
+   selectRandomTeams() {
+     // Get two random teams
+     const shuffled = [...TEAMS].sort(() => Math.random() - 0.5);
+     const home = shuffled[0];
+     const away = shuffled[1];
+
+     // Update team names
+     const homeElt = document.querySelector(".hometeamname");
+     const awayElt = document.querySelector(".awayteamname");
+     homeElt.innerHTML = home;
+     awayElt.innerHTML = away;
+
+     // Apply team colors as background
+     if (TEAM_COLORS[home]) {
+       homeElt.style.background = TEAM_COLORS[home];
+     }
+     if (TEAM_COLORS[away]) {
+       awayElt.style.background = TEAM_COLORS[away];
+     }
+
+     // Reset scores and clock
+     HOME.reset();
+     AWAY.reset();
+     CLOCK.reset();
+
+     // Close modal
+     this.modal.classList.remove("is-active");
+     this.deselectAll();
    }
  }
 </script>
@@ -878,8 +895,9 @@
           <input class="input" id="starting-time" type="text" placeholder="e.g., 0730 for 7:30" style="background: #2a2a38; color: #E8E8E8; border: 2px solid #3a3a4a; border-radius: 6px;" />
         </div>
      </section>
-      <footer class="modal-card-foot">
-        <button class="button is-success" onClick="TEAM_SELECTOR.changeTeams()" style="background: linear-gradient(145deg, #10B981 0%, #059669 100%); color: white; font-weight: 700; font-size: 16pt; padding: 24px 48px; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);">Select Teams</button>
+      <footer class="modal-card-foot" style="display: flex; gap: 12px; justify-content: space-between;">
+        <button class="button is-success" onClick="TEAM_SELECTOR.changeTeams()" style="flex: 1; background: linear-gradient(145deg, #10B981 0%, #059669 100%); color: white; font-weight: 700; font-size: 16pt; padding: 24px 48px; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);">Select Teams</button>
+        <button class="button" onClick="TEAM_SELECTOR.selectRandomTeams()" style="flex: 1; background: linear-gradient(145deg, #8B5CF6 0%, #6D28D9 100%); color: white; font-weight: 700; font-size: 16pt; padding: 24px 48px; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);">🎲 Random Teams</button>
       </footer>
     </div>
   </div>
