@@ -163,64 +163,112 @@
      0 0 10px rgba(255, 215, 0, 0.5),
      0 2px 4px rgba(0, 0, 0, 0.8);
  }
+ .score-buttons {
+   display: flex;
+   gap: 12px;
+   padding: 0 8px;
+ }
  .twopointer {
-   border-radius: 12px;
+   border-radius: 16px;
    height: 125px;
-   background: linear-gradient(145deg, #1a1a24 0%, #0f0f18 100%);
-   color: #ffffff;
-   font-size: 22pt;
+   background: linear-gradient(145deg, #1e3a5f 0%, #0f1f3a 100%);
+   border: 3px solid #3B82F6;
+   color: #60A5FA;
+   font-size: 24pt;
    font-weight: 900;
    text-transform: uppercase;
-   letter-spacing: 2px;
+   letter-spacing: 3px;
    box-shadow:
-     0 0 20px rgba(37, 99, 235, 0.4),
-     0 4px 16px rgba(0, 0, 0, 0.5),
-     inset 0 1px 0 rgba(255, 255, 255, 0.2);
-   transition: all 0.15s ease;
+     0 0 25px rgba(59, 130, 246, 0.5),
+     0 6px 20px rgba(0, 0, 0, 0.5),
+     inset 0 1px 0 rgba(96, 165, 250, 0.3),
+     inset 0 -2px 8px rgba(0, 0, 0, 0.3);
+   transition: all 0.2s ease;
    cursor: pointer;
-   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+   text-shadow: 0 0 10px rgba(59, 130, 246, 0.8), 0 2px 4px rgba(0, 0, 0, 0.8);
+   position: relative;
+   overflow: hidden;
+ }
+ .twopointer::before {
+   content: '';
+   position: absolute;
+   top: 0;
+   left: -100%;
+   width: 100%;
+   height: 100%;
+   background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.2), transparent);
+   transition: left 0.5s ease;
+ }
+ .twopointer:hover::before {
+   left: 100%;
  }
  .threepointer {
-   border-radius: 12px;
+   border-radius: 16px;
    height: 125px;
-   background: linear-gradient(145deg, #1a1a24 0%, #0f0f18 100%);
-   color: #ffffff;
-   font-size: 22pt;
+   background: linear-gradient(145deg, #4a2c1a 0%, #2d1a0f 100%);
+   border: 3px solid #F97316;
+   color: #FB923C;
+   font-size: 24pt;
    font-weight: 900;
    text-transform: uppercase;
-   letter-spacing: 2px;
+   letter-spacing: 3px;
    box-shadow:
-     0 0 20px rgba(249, 115, 22, 0.4),
-     0 4px 16px rgba(0, 0, 0, 0.5),
-     inset 0 1px 0 rgba(255, 255, 255, 0.2);
-   transition: all 0.15s ease;
+     0 0 25px rgba(249, 115, 22, 0.5),
+     0 6px 20px rgba(0, 0, 0, 0.5),
+     inset 0 1px 0 rgba(251, 146, 60, 0.3),
+     inset 0 -2px 8px rgba(0, 0, 0, 0.3);
+   transition: all 0.2s ease;
    cursor: pointer;
-   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+   text-shadow: 0 0 10px rgba(249, 115, 22, 0.8), 0 2px 4px rgba(0, 0, 0, 0.8);
+   position: relative;
+   overflow: hidden;
+ }
+ .threepointer::before {
+   content: '';
+   position: absolute;
+   top: 0;
+   left: -100%;
+   width: 100%;
+   height: 100%;
+   background: linear-gradient(90deg, transparent, rgba(249, 115, 22, 0.2), transparent);
+   transition: left 0.5s ease;
+ }
+ .threepointer:hover::before {
+   left: 100%;
  }
  .twopointer:hover {
-   background: linear-gradient(145deg, #3B82F6 0%, #2563EB 100%);
+   background: linear-gradient(145deg, #2563EB 0%, #1D4ED8 100%);
    border-color: #60A5FA;
-   transform: translateY(-3px);
+   transform: translateY(-4px) scale(1.02);
+   color: #ffffff;
    box-shadow:
-     0 0 30px rgba(59, 130, 246, 0.6),
-     0 6px 20px rgba(0, 0, 0, 0.6),
-     inset 0 1px 0 rgba(255, 255, 255, 0.3);
+     0 0 40px rgba(59, 130, 246, 0.7),
+     0 8px 25px rgba(0, 0, 0, 0.6),
+     inset 0 1px 0 rgba(255, 255, 255, 0.4);
  }
  .threepointer:hover {
-   background: linear-gradient(145deg, #FB923C 0%, #F97316 100%);
+   background: linear-gradient(145deg, #EA580C 0%, #C2410C 100%);
    border-color: #FBBF24;
-   transform: translateY(-3px);
+   transform: translateY(-4px) scale(1.02);
+   color: #ffffff;
    box-shadow:
-     0 0 30px rgba(251, 146, 60, 0.6),
-     0 6px 20px rgba(0, 0, 0, 0.6),
-     inset 0 1px 0 rgba(255, 255, 255, 0.3);
+     0 0 40px rgba(249, 115, 22, 0.7),
+     0 8px 25px rgba(0, 0, 0, 0.6),
+     inset 0 1px 0 rgba(255, 255, 255, 0.4);
  }
- .twopointer:active, .threepointer:active {
-   transform: translateY(0);
+ .twopointer:active {
+   transform: translateY(1px) scale(0.98);
    box-shadow:
-     0 0 15px rgba(0, 0, 0, 0.4),
+     0 0 20px rgba(59, 130, 246, 0.5),
      0 2px 8px rgba(0, 0, 0, 0.6),
-     inset 0 2px 4px rgba(0, 0, 0, 0.3);
+     inset 0 3px 6px rgba(0, 0, 0, 0.4);
+ }
+ .threepointer:active {
+   transform: translateY(1px) scale(0.98);
+   box-shadow:
+     0 0 20px rgba(249, 115, 22, 0.5),
+     0 2px 8px rgba(0, 0, 0, 0.6),
+     inset 0 3px 6px rgba(0, 0, 0, 0.4);
  }
  .paused {
    border: 3px solid #FF4444;
@@ -1030,17 +1078,13 @@
           <div class="tile is-child">
             <div class="score" onTouchStart="HOME.onePointer(event)" onClick="HOME.onePointer()">0</div>
           </div>
-          <div class="tile is-parent">
-            <div class="tile is-child">
-              <a class="button is-large is-fullwidth twopointer" onTouchStart="HOME.twoPointer(event)" onClick="HOME.twoPointer()">
-                +2pt
-              </a>
-            </div>
-            <div class="tile is-child">
-              <a class="button is-large is-fullwidth threepointer" onTouchStart="HOME.threePointer(event)" onClick="HOME.threePointer()">
-                +3pt
-              </a>
-            </div>
+          <div class="score-buttons">
+            <a class="button is-large is-fullwidth twopointer" onTouchStart="HOME.twoPointer(event)" onClick="HOME.twoPointer()">
+              +2pt
+            </a>
+            <a class="button is-large is-fullwidth threepointer" onTouchStart="HOME.threePointer(event)" onClick="HOME.threePointer()">
+              +3pt
+            </a>
           </div>
         </div>
       </div>
@@ -1079,17 +1123,13 @@
           <div class="tile is-child">
             <div class="score" onTouchStart="AWAY.onePointer(event)" onClick="AWAY.onePointer()">0</div>
           </div>
-          <div class="tile is-parent">
-            <div class="tile is-child">
-              <a class="button is-large is-fullwidth twopointer" onTouchStart="AWAY.twoPointer(event)" onClick="AWAY.twoPointer()">
-                +2pt
-              </a>
-            </div>
-            <div class="tile is-child">
-              <a class="button is-large is-fullwidth threepointer" onTouchStart="AWAY.threePointer(event)" onClick="AWAY.threePointer()">
-                +3pt
-              </a>
-            </div>
+          <div class="score-buttons">
+            <a class="button is-large is-fullwidth twopointer" onTouchStart="AWAY.twoPointer(event)" onClick="AWAY.twoPointer()">
+              +2pt
+            </a>
+            <a class="button is-large is-fullwidth threepointer" onTouchStart="AWAY.threePointer(event)" onClick="AWAY.threePointer()">
+              +3pt
+            </a>
           </div>
         </div>
       </div>
