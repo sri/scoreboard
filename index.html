@@ -226,10 +226,47 @@
    border: 3px solid #FF4444;
    box-shadow: 0 0 30px rgba(255, 68, 68, 0.5);
  }
+ .audio-toggle {
+   width: 60px;
+   height: 60px;
+   border-radius: 50%;
+   border: 3px solid #3a3a4a;
+   background: linear-gradient(145deg, #1a1a24 0%, #0f0f18 100%);
+   color: #888;
+   font-size: 28pt;
+   cursor: pointer;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   transition: all 0.3s ease;
+   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+   user-select: none;
+   margin: 10px auto 0 auto;
+ }
+ .audio-toggle.enabled {
+   border-color: #10B981;
+   color: #10B981;
+   box-shadow: 0 0 20px rgba(16, 185, 129, 0.4), 0 4px 12px rgba(0, 0, 0, 0.5);
+ }
+ .audio-toggle:hover {
+   transform: scale(1.1);
+ }
+ .audio-toggle:active {
+   transform: scale(0.95);
+ }
 </style>
 <script type="text/javascript">
  const MINS_PER_QUARTER = 12;
  const MINS_PER_OVERTIME = 5;
+
+ // Check if device is iPad
+ function isIPad() {
+   return (navigator.userAgent.match(/iPad/i) != null) ||
+          (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+ }
+
+ // Audio enabled state - default true on iPad, false otherwise
+ let AUDIO_ENABLED = isIPad();
 
  const TEAMS = [
    'Atlanta Hawks',
@@ -333,6 +370,22 @@
    }
  }
 
+ function toggleAudio() {
+   AUDIO_ENABLED = !AUDIO_ENABLED;
+   const toggleBtn = document.querySelector('.audio-toggle');
+   if (AUDIO_ENABLED) {
+     toggleBtn.classList.add('enabled');
+     toggleBtn.innerHTML = '🔊';
+   } else {
+     toggleBtn.classList.remove('enabled');
+     toggleBtn.innerHTML = '🔇';
+     // Stop any currently playing audio
+     if (CROWD_SOUND) {
+       CROWD_SOUND.stop();
+     }
+   }
+ }
+
  class Team {
    constructor(eltName) {
      this.elt = document.querySelector(eltName);
@@ -418,6 +471,11 @@
    }
 
    play() {
+     // Check if audio is enabled
+     if (!AUDIO_ENABLED) {
+       return;
+     }
+
      if (this.audio === null) {
        console.log("intializing audio...");
        this.audio = new Audio();
@@ -668,6 +726,15 @@
    // Set initial ball indicator
    updateBallIndicator();
 
+   // Initialize audio toggle button state
+   const audioToggle = document.querySelector('.audio-toggle');
+   if (AUDIO_ENABLED) {
+     audioToggle.classList.add('enabled');
+     audioToggle.innerHTML = '🔊';
+   } else {
+     audioToggle.innerHTML = '🔇';
+   }
+
    window.addEventListener("beforeunload", function (e) {
      if (IsTest()) return null;
      var confirmationMessage = 'If you leave, your game will be lost.';
@@ -880,7 +947,7 @@
       </div>
     </div>
 
-    <div class="column is-one-fifths clock paused" onTouchStart="CLOCK.togglePause(event)" onclick="CLOCK.togglePause()">
+    <div class="column is-one-fifths clock paused" onTouchStart="CLOCK.togglePause(event)" onclick="CLOCK.togglePause()" id="clock-t">
       <div class="tile is-ancestor">
         <div class="tile is-vertical is-parent">
           <div class="tile is-child">
@@ -928,6 +995,10 @@
         </div>
       </div>
     </div>
+  </div>
+
+  <div style="text-align: center; margin-top: 20px;">
+    <button class="audio-toggle" onclick="toggleAudio()" title="Toggle audio">🔇</button>
   </div>
 
   <div class="modal">
