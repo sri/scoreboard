@@ -587,12 +587,14 @@
  let BUZZER = null;
 
  function BuzzerInit() {
+   if (!AUDIO_ENABLED) return;
    if (BUZZER) return;
    BUZZER = new Audio();
    BUZZER.play();
  }
 
  function Buzzer() {
+   if (!AUDIO_ENABLED) return;
    BUZZER.src = 'buzzer.mp3';
    BUZZER.volume = 0.1;
    BUZZER.play();
