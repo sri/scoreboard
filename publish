@@ -1,0 +1,2 @@
+#!/bin/bash
+git checkout gh-pages && git merge origin/main --no-edit && git push && git checkout main
