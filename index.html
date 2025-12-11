@@ -226,7 +226,7 @@
    border: 3px solid #FF4444;
    box-shadow: 0 0 30px rgba(255, 68, 68, 0.5);
  }
- .audio-toggle {
+ .audio-toggle, .mic-toggle {
    width: 60px;
    height: 60px;
    border-radius: 50%;
@@ -235,23 +235,33 @@
    color: #888;
    font-size: 28pt;
    cursor: pointer;
-   display: flex;
+   display: inline-flex;
    align-items: center;
    justify-content: center;
    transition: all 0.3s ease;
    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
    user-select: none;
-   margin: 10px auto 0 auto;
+   margin: 0 10px;
+   position: relative;
  }
- .audio-toggle.enabled {
+ .audio-toggle.enabled, .mic-toggle.enabled {
    border-color: #10B981;
    color: #10B981;
    box-shadow: 0 0 20px rgba(16, 185, 129, 0.4), 0 4px 12px rgba(0, 0, 0, 0.5);
  }
- .audio-toggle:hover {
+ .mic-toggle:not(.enabled)::after {
+   content: '';
+   position: absolute;
+   width: 50px;
+   height: 3px;
+   background: #FF4444;
+   transform: rotate(-45deg);
+   box-shadow: 0 0 8px rgba(255, 68, 68, 0.8);
+ }
+ .audio-toggle:hover, .mic-toggle:hover {
    transform: scale(1.1);
  }
- .audio-toggle:active {
+ .audio-toggle:active, .mic-toggle:active {
    transform: scale(0.95);
  }
 </style>
@@ -267,6 +277,10 @@
 
  // Audio enabled state - default true on iPad, false otherwise
  let AUDIO_ENABLED = isIPad();
+
+ // Mic enabled state - default false, only enable when user requests
+ let MIC_ENABLED = false;
+ let SPEECH_RECOGNITION = null;
 
  const TEAMS = [
    'Atlanta Hawks',
@@ -384,6 +398,91 @@
        CROWD_SOUND.stop();
      }
    }
+ }
+
+ function toggleMic() {
+   MIC_ENABLED = !MIC_ENABLED;
+   const toggleBtn = document.querySelector('.mic-toggle');
+
+   if (MIC_ENABLED) {
+     toggleBtn.classList.add('enabled');
+     toggleBtn.innerHTML = '🎤';
+     // Initialize and start speech recognition
+     initSpeechRecognition();
+   } else {
+     toggleBtn.classList.remove('enabled');
+     toggleBtn.innerHTML = '🎙️';
+     // Stop speech recognition
+     if (SPEECH_RECOGNITION) {
+       SPEECH_RECOGNITION.stop();
+     }
+   }
+ }
+
+ function initSpeechRecognition() {
+   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+   if (!SpeechRecognition) {
+     alert('Speech recognition is not supported in this browser. Please use Chrome or Safari (iOS 14.5+).');
+     MIC_ENABLED = false;
+     document.querySelector('.mic-toggle').classList.remove('enabled');
+     return;
+   }
+
+   SPEECH_RECOGNITION = new SpeechRecognition();
+   SPEECH_RECOGNITION.continuous = true;
+   SPEECH_RECOGNITION.interimResults = false;
+   SPEECH_RECOGNITION.lang = 'en-US';
+
+   let finalTranscript = '';
+
+   // Start recognition
+   try {
+     SPEECH_RECOGNITION.start();
+   } catch (e) {
+     console.error('Error starting recognition:', e);
+     alert(`Error starting recognition: ${e}`);
+   }
+
+   // Handle results
+   SPEECH_RECOGNITION.onresult = (event) => {
+     for (let i = event.resultIndex; i < event.results.length; i++) {
+       const transcriptPiece = event.results[i][0].transcript;
+       if (event.results[i].isFinal) {
+         finalTranscript = transcriptPiece + ' ';
+       }
+     }
+
+     console.log("got final", finalTranscript);
+     if (/two|2/i.test(finalTranscript)) {
+       TEAM_WITH_BALL.twoPointer();
+     } else if (/three|3/i.test(finalTranscript)) {
+       TEAM_WITH_BALL.threePointer();
+     }
+   };
+
+   // Handle errors
+   SPEECH_RECOGNITION.onerror = (event) => {
+     console.error('Recognition error:', event.error);
+     if (event.error === 'not-allowed') {
+       alert('Microphone access denied. Please allow microphone access to use voice commands.');
+       MIC_ENABLED = false;
+       document.querySelector('.mic-toggle').classList.remove('enabled');
+       document.querySelector('.mic-toggle').innerHTML = '🎙️';
+     }
+   };
+
+   // Handle end of recognition
+   SPEECH_RECOGNITION.onend = () => {
+     // Restart if still enabled
+     if (MIC_ENABLED) {
+       try {
+         SPEECH_RECOGNITION.start();
+       } catch (e) {
+         console.error('Error restarting recognition:', e);
+       }
+     }
+   };
  }
 
  class Team {
@@ -999,6 +1098,7 @@
 
   <div style="text-align: center; margin-top: 20px;">
     <button class="audio-toggle" onclick="toggleAudio()" title="Toggle audio">🔇</button>
+    <button class="mic-toggle" onclick="toggleMic()" title="Toggle voice commands">🎙️</button>
   </div>
 
   <div class="modal">
@@ -1037,85 +1137,5 @@
       </footer>
     </div>
   </div>
-  <div id="error"></div>
-  <div id="transcript"></div>
-  <script>
-   // Check for browser support
-   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-   if (!SpeechRecognition) {
-     document.getElementById('error').style.display = 'block';
-     document.getElementById('error').textContent = 'Speech recognition is not supported in this browser. Please use Chrome or Safari (iOS 14.5+).';
-   } else {
-     const recognition = new SpeechRecognition();
-     const transcript = document.getElementById('transcript');
-     const errorDiv = document.getElementById('error');
-
-     // Configure recognition
-     recognition.continuous = true;
-     recognition.interimResults = false;
-     recognition.lang = 'en-US';
-
-     let finalTranscript = '';
-
-     // Start recognition
-     try {
-       recognition.start();
-       errorDiv.style.display = 'none';
-     } catch (e) {
-       console.error('Error starting recognition:', e);
-       error.innerHTML = `Error starting recognition: ${e}`;
-     }
-
-     // Handle results
-     recognition.onresult = (event) => {
-       let interimTranscript = '';
-
-       console.log(event);
-       for (let i = event.resultIndex; i < event.results.length; i++) {
-         const transcriptPiece = event.results[i][0].transcript;
-         if (event.results[i].isFinal) {
-           finalTranscript = transcriptPiece + ' ';
-         } else {
-         }
-
-       }
-       console.log("got final", finalTranscript);
-       if (/two|2/i.test(finalTranscript)) {
-         TEAM_WITH_BALL.twoPointer();
-       } else if (/three|3/i.test(finalTranscript)) {
-          TEAM_WITH_BALL.threePointer();
-       }
-
-       // Display both final and interim results
-       transcript.innerHTML = finalTranscript +
-                     (interimTranscript ? '<span class="interim">' + interimTranscript + '</span>' : '');
-     };
-
-     // Handle errors
-     recognition.onerror = (event) => {
-       console.error('Recognition error:', event.error);
-       errorDiv.style.display = 'block';
-
-       switch(event.error) {
-         case 'no-speech':
-           errorDiv.textContent = 'No speech detected. Please try again.';
-           break;
-         case 'audio-capture':
-           errorDiv.textContent = 'No microphone detected. Please check your microphone.';
-           break;
-         case 'not-allowed':
-           errorDiv.textContent = 'Microphone access denied. Please allow microphone access.';
-           break;
-         default:
-           errorDiv.textContent = 'Error: ' + event.error;
-       }
-     };
-
-     // Handle end of recognition
-     recognition.onend = () => {
-     };
-   }
-  </script>
 </body>
 </html>
