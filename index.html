@@ -652,6 +652,7 @@
    }
 
    stop() {
+     if (!this.audio) return;
      if (this.audio.paused) return;
      this.audio.pause();
      this.audio.currentTime = 0;
@@ -897,6 +898,8 @@
      this.modal = document.querySelector(".modal");
      this.populateTeams();
      this.allTeams = document.querySelectorAll(".modal .teams button");
+     this.homeTeam = null;
+     this.awayTeam = null;
    }
 
    populateTeams() {
@@ -938,51 +941,16 @@
    }
 
    changeTeams() {
-     if (!this.modal.classList.contains("is-active")) {
-       CLOCK.pause();
-       this.modal.classList.add("is-active");
+     if (this.homeTeam && this.awayTeam) {
+       this._setTeams(this.homeTeam, this.awayTeam);
+     } else if (this.homeTeam || this.awayTeam) {
        return;
-     }
-
-     const selected = this.getAllSelected();
-     this.modal.classList.remove("is-active");
-     this.deselectAll();
-
-     if (selected.length === 2) {
-       var home = selected[0];
-       var away = selected[1];
-       const homeElt = document.querySelector(".hometeamname");
-       const awayElt = document.querySelector(".awayteamname");
-
-       // Update team names while preserving ball indicators
-       const homeBall = homeElt.querySelector('.home-ball');
-       const awayBall = awayElt.querySelector('.away-ball');
-       homeElt.innerHTML = home;
-       awayElt.innerHTML = away;
-       homeElt.appendChild(homeBall);
-       awayElt.appendChild(awayBall);
-
-       // Apply team colors as background
-       if (TEAM_COLORS[home]) {
-         homeElt.style.background = TEAM_COLORS[home];
+     }  else {
+       if (!this.modal.classList.contains("is-active")) {
+         CLOCK.pause();
+         this.modal.classList.add("is-active");
        }
-       if (TEAM_COLORS[away]) {
-         awayElt.style.background = TEAM_COLORS[away];
-       }
-
-       HOME.reset();
-       AWAY.reset();
-       CLOCK.reset();
-
-       // Reset ball possession to home team
-       TEAM_WITH_BALL = HOME;
-       updateBallIndicator();
      }
-
-     this.setStartingScore(HOME, "#starting-score-team1");
-     this.setStartingScore(AWAY, "#starting-score-team2");
-     this.setStartingQuarter("#starting-quarter");
-     this.setStartingTime("#starting-time");
    }
 
    setStartingTime(eltId) {
@@ -1022,6 +990,9 @@
        const teamName = elt.dataset.team;
        if (TEAM_COLORS[teamName]) {
          elt.style.background = TEAM_COLORS[teamName];
+         if (!this.homeTeam) this.homeTeam = teamName;
+         else if (!this.awayTeam) this.awayTeam = teamName;
+
        }
      }
    }
@@ -1031,7 +1002,10 @@
      const shuffled = [...TEAMS].sort(() => Math.random() - 0.5);
      const home = shuffled[0];
      const away = shuffled[1];
+     this._setTeams(home, away);
+   }
 
+   _setTeams(home, away) {
      // Update team names while preserving ball indicators
      const homeElt = document.querySelector(".hometeamname");
      const awayElt = document.querySelector(".awayteamname");
@@ -1059,9 +1033,17 @@
      TEAM_WITH_BALL = HOME;
      updateBallIndicator();
 
+     this.homeTeam = null;
+     this.awayTeam = null;
+
      // Close modal and deselect teams
      this.modal.classList.remove("is-active");
      this.deselectAll();
+
+     this.setStartingScore(HOME, "#starting-score-team1");
+     this.setStartingScore(AWAY, "#starting-score-team2");
+     this.setStartingQuarter("#starting-quarter");
+     this.setStartingTime("#starting-time");
    }
  }
 </script>
@@ -1147,7 +1129,7 @@
     <div class="modal-background"></div>
     <div class="modal-card">
       <header class="modal-card-head">
-        <p class="modal-card-title">Select Teams</p>
+        <p class="modal-card-title">Select Teams (1st selected is Home)</p>
         <button class="delete" aria-label="close" onClick="TEAM_SELECTOR.modal.classList.remove('is-active')"></button>
       </header>
       <section class="modal-card-body teams">
