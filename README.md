@@ -50,7 +50,7 @@ A fully-featured basketball scoreboard application for my little one.
 ## Browser Compatibility
 
 Tested and verified on:
-- Pixelbook (Chrome, latest)
+- Mac (Chrome & Safari latest)
 - iPad (Safari, latest)
 
 ---
