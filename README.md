@@ -1,29 +1,65 @@
-# scoreboard
-A basketball scoreboard for my little one.
+# Basketball Scoreboard
 
-See it in action: https://sri.github.io/scoreboard/index.html
+A fully-featured basketball scoreboard application for my little one.
 
-# Features
-- displays a game clock and a shot clock
-- display scores for two teams
-- shot clock will reset to 24 when someone scores
-- clocks will pause at the end of quarters and overtime
-- overtime starts automatically when at the end of a game, score is tied
-  (if you hit a buzzer beater, and then after the end of the game, the score
-    is tied, unpause the clock to start overtime)
-- allows for team selection (click/touch team name)
-- buzzer sound at the end of periods
-- click on quarter to advance to next quarter
+**[See it in action](https://sri.github.io/scoreboard/index.html)**
 
-- TODO: use localstorage to save state; allow selecting mins per quarter
+---
 
-# Usage
-- touch the team name to select different teams
-- touch the clock to start/pause it
-- touching on a team's score increments it by one
+## Features
 
-# Testing
-- tested on Pixelbook (latest Chrome) & iPad (latest Safari)
+### Timekeeping
+- **Game Clock** - tracks the main game time with automatic quarter/period management
+- **Shot Clock** - 24-second shot clock that automatically resets when points are scored
+- **Auto-pause** - clocks pause automatically at the end of quarters and overtime periods
+- **Quarter Advancement** - click on the quarter indicator to advance to the next period
 
-# Tech
-Everything is in a single HTML file. Uses ES6 (classes). Uses font from Google & the Bulma CSS framework.
+### Scoring
+- **Two-team Scoring** - track scores for both teams with touch-to-increment controls
+- **Smart Scoring** - shot clock automatically resets to 24 seconds when points are added
+
+### Game Management
+- **Overtime Support** - automatically starts overtime when the score is tied at the end of regulation
+  - If you hit a buzzer beater and the score is tied after the period ends, simply unpause the clock to start overtime
+- **Team Selection** - choose from multiple teams by clicking/touching the team name
+- **Buzzer Sound** - authentic buzzer sounds at the end of each period
+
+---
+
+## Usage
+
+| Action | Result |
+|--------|--------|
+| Touch team name | Select different teams |
+| Touch the clock | Start/pause the game clock |
+| Touch a team's score | Increment score by 1 point |
+| Touch quarter indicator | Advance to next quarter |
+
+---
+
+## Technical Details
+
+**Architecture**: Single-file HTML application
+**JavaScript**: ES6+ with class-based architecture
+**Styling**: Bulma CSS framework
+**Fonts**: Google Fonts
+**UI Design**: Enhanced by Claude
+
+---
+
+## Browser Compatibility
+
+Tested and verified on:
+- Mac (Chrome & Safari latest)
+- iPad (Safari, latest)
+
+---
+
+## Roadmap
+
+- [ ] LocalStorage integration to save and restore game state
+- [ ] Configurable quarter/period duration settings
+
+---
+
+*Built with love for family game nights*
