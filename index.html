@@ -587,9 +587,9 @@
  let BUZZER = null;
 
  function BuzzerInit() {
-   if (!AUDIO_ENABLED) return;
    if (BUZZER) return;
    BUZZER = new Audio();
+   if (!AUDIO_ENABLED) return;
    BUZZER.play();
  }
 
