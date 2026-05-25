@@ -312,9 +312,28 @@
  .audio-toggle:active, .mic-toggle:active {
    transform: scale(0.95);
  }
+ .quarter-time-options {
+   display: grid;
+   grid-template-columns: repeat(4, 1fr);
+   gap: 10px;
+ }
+ .quarter-time-option {
+   background: #2a2a38;
+   color: #E8E8E8;
+   border: 2px solid #3a3a4a;
+   border-radius: 8px;
+   font-weight: 700;
+   padding: 10px 0;
+   cursor: pointer;
+ }
+ .quarter-time-option.is-primary {
+   border-color: #FFD700;
+   color: #FFD700;
+   box-shadow: 0 0 14px rgba(255, 215, 0, 0.35);
+ }
 </style>
 <script type="text/javascript">
- const MINS_PER_QUARTER = 12;
+ let MINS_PER_QUARTER = 12;
  const MINS_PER_OVERTIME = 5;
 
  // Check if device is iPad
@@ -953,13 +972,19 @@
      }
    }
 
-   setStartingTime(eltId) {
-     const elt = document.querySelector(eltId);
-     const value = elt.value.trim();
-     if (value === "") return;
-     const mins = value.substr(0, 2);
-     const secs = value.substr(2, 2);
-     CLOCK.setTime(mins, secs);
+   selectQuarterDuration(mins, elt) {
+     const options = document.querySelectorAll('.quarter-time-option');
+     options.forEach(option => option.classList.remove('is-primary'));
+     if (elt) {
+       elt.classList.add('is-primary');
+     }
+     MINS_PER_QUARTER = mins;
+   }
+
+   getSelectedQuarterDuration() {
+     const selected = document.querySelector('.quarter-time-option.is-primary');
+     if (!selected) return 12;
+     return asInt(selected.dataset.mins);
    }
 
    setStartingQuarter(eltId) {
@@ -1025,6 +1050,7 @@
      }
 
      // Reset scores and clock
+     MINS_PER_QUARTER = this.getSelectedQuarterDuration();
      HOME.reset();
      AWAY.reset();
      CLOCK.reset();
@@ -1043,7 +1069,6 @@
      this.setStartingScore(HOME, "#starting-score-team1");
      this.setStartingScore(AWAY, "#starting-score-team2");
      this.setStartingQuarter("#starting-quarter");
-     this.setStartingTime("#starting-time");
    }
  }
 </script>
@@ -1151,8 +1176,13 @@
           <input class="input" id="starting-quarter" type="text" placeholder="e.g., 3" style="background: #2a2a38; color: #E8E8E8; border: 2px solid #3a3a4a; border-radius: 6px;" />
         </div>
         <div class="field">
-          <label class="label" style="color: #FFD700; font-weight: 600;">Time (MMSS)</label>
-          <input class="input" id="starting-time" type="text" placeholder="e.g., 0730 for 7:30" style="background: #2a2a38; color: #E8E8E8; border: 2px solid #3a3a4a; border-radius: 6px;" />
+          <label class="label" style="color: #FFD700; font-weight: 600;">Time Per Quarter</label>
+          <div class="quarter-time-options">
+            <button class="button quarter-time-option" data-mins="2" onClick="TEAM_SELECTOR.selectQuarterDuration(2, this)">2min</button>
+            <button class="button quarter-time-option" data-mins="5" onClick="TEAM_SELECTOR.selectQuarterDuration(5, this)">5min</button>
+            <button class="button quarter-time-option" data-mins="10" onClick="TEAM_SELECTOR.selectQuarterDuration(10, this)">10min</button>
+            <button class="button quarter-time-option is-primary" data-mins="12" onClick="TEAM_SELECTOR.selectQuarterDuration(12, this)">12min</button>
+          </div>
         </div>
      </section>
       <footer class="modal-card-foot" style="display: flex; gap: 12px; justify-content: space-between;">
